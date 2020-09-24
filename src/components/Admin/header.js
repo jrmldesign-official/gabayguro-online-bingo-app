@@ -17,12 +17,14 @@ class header extends Component {
     getUserDetails = async () => {
 
         axios({
-            method: 'post',
-            url: 'Useraccounts/fetch_user_details_by_user_id',
+            url: 'https://binggo-test.dokyumento.asia/index.php/Useraccounts/fetch_user_details_by_user_id',
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
             data: {
                 user_id: localStorage.user_id
             },
-            dataType: 'json'
         }).then(res => {
 
             localStorage.setItem("name", res.data.payload[0].user_fullname)

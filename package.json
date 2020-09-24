@@ -2,7 +2,6 @@
   "name": "gabayguro-online-bingo-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://binggo-test.dokyumento.asia/index.php/",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -10,6 +9,7 @@
     "axios": "^0.20.0",
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
+    "querystring": "^0.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
