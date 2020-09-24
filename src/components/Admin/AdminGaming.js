@@ -8,6 +8,9 @@ var socket = io.connect('http://localhost:4000')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
+var api = axios.create({
+    baseURL: 'https://binggo-test.dokyumento.asia/index.php/'
+});
 
 var CollectDraw = []
 
@@ -41,7 +44,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, getWinningPattern)
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, getWinningPattern)
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
@@ -198,7 +201,7 @@ class Game extends Component {
             "O5": O5_flag
         }
     
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/set_binggo_wining_pattern`, payload)
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/set_binggo_wining_pattern`, payload)
         .then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("GetPattern").remove()
@@ -230,7 +233,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, data)
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, data)
         .then(res => {
 
         })
@@ -350,7 +353,7 @@ class Game extends Component {
                     bdl_created_by: user_id
                 }
         
-                axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/insert_draw_logs`, insertDraw)
+                api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/insert_draw_logs`, insertDraw)
                 .then(res => {
         
                     if(res.data.status === "SUCCESS"){
@@ -359,7 +362,7 @@ class Game extends Component {
                             binggo_event_id: room
                         }
                 
-                        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, getAllDraw)
+                        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, getAllDraw)
                         .then(res => {
                 
                             if(res.data.status === "SUCCESS"){

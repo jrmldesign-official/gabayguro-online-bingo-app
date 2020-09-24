@@ -3,6 +3,10 @@ import Header from './header';
 import '../../App.css'
 import axios from 'axios';
 
+var api = axios.create({
+  baseURL: 'https://binggo-test.dokyumento.asia/index.php/'
+});
+
 class Dashboard extends Component {
 
   state = {
@@ -21,19 +25,8 @@ class Dashboard extends Component {
   
 
   async componentDidMount() {
-    let result = await axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_all_binggo_events`)
-    if(result.data.result === "SUCCESS"){
-      this.setState({listevents: result.data.payload})
-    }else{
-
-      let ifEmpty = {                
-        binggo_event_id: 0,
-        binggo_title: 'No Posted Events'
-      }
-
-      this.setState({listevents: [ifEmpty]})
-    }
-    
+    let result = await api.post(`Binggo/fetch_all_binggo_events`)
+    this.setState({listevents: result.data.payload})
     console.log(result.data)
   }
 

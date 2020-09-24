@@ -7,6 +7,9 @@ var socket = io.connect('http://localhost:4000')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
+var api = axios.create({
+    baseURL: 'https://binggo-test.dokyumento.asia/index.php/'
+});
 
 class Game extends Component {
 
@@ -112,7 +115,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, fetchDrawLogs)
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, fetchDrawLogs)
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
@@ -152,7 +155,7 @@ class Game extends Component {
     }
     
     getWinningPattern = () => {
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, 
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, 
         { 
             binggo_event_id: localStorage.room_id,
         })
@@ -197,7 +200,7 @@ class Game extends Component {
 
     getUserDetails = () => {
 
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
         { 
             binggo_event_id: localStorage.room_id,
             user_id: localStorage.user_id 
@@ -437,7 +440,7 @@ class Game extends Component {
             "O5": document.querySelector(".O5").innerHTML
         }
 
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_card`, bingo_card_data)
+        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_card`, bingo_card_data)
         .then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("bingo-card").setAttribute("data-set", true)
