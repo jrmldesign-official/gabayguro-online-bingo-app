@@ -334,7 +334,7 @@ class Game extends Component {
 
         let test = document.getElementById("winning-pattern-card").getAttribute("data-set")
 
-        if(test === 'false'){
+        if(test === 'false' || test === false){
 
             alert("Please set your winning pattern first.")
 
