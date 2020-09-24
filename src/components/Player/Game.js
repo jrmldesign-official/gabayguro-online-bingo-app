@@ -9,10 +9,6 @@ var user_id = localStorage.user_id
 var username = localStorage.name
 var api = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
-    headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-    },
 });
 
 class Game extends Component {

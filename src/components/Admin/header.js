@@ -15,7 +15,7 @@ class header extends Component {
     }
 
     getUserDetails = async () => {
-        axios.post(`Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
         .then(res => {
 
             localStorage.setItem("name", res.data.payload[0].user_fullname)
