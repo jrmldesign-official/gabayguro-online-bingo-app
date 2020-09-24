@@ -8,8 +8,12 @@ var socket = io.connect('http://localhost:4000')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
-var api = axios.create({
+
+const API = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+    },
 });
 
 var CollectDraw = []
@@ -40,13 +44,9 @@ class Game extends Component {
             this.setState({ lop: users })
         });
 
-        let getWinningPattern = {
+        API.post(`Binggo/fetch_winning_pattern`, {
             binggo_event_id: room
-        }
-
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, getWinningPattern)
-        .then(res => {
-
+        }).then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("GetPattern").remove()
                 // document.getElementById("DrawBall").classList.remove("d-none")
@@ -99,7 +99,10 @@ class Game extends Component {
 
             console.log(res);
             console.log(res.data);
-        })
+        }).catch(err => {
+            console.log(err)
+        });
+
 
     }
 
@@ -170,8 +173,7 @@ class Game extends Component {
         if(G5 === true) { var G5_flag = 1 } else { var G5_flag = 0 }
         if(O5 === true) { var O5_flag = 1 } else { var O5_flag = 0 }
 
-
-        const payload = {
+        API.post(`Binggo/set_binggo_wining_pattern`, {
             "binggo_event_id": room,
             "created_by": user_id,
             "B1": B1_flag,
@@ -199,48 +201,50 @@ class Game extends Component {
             "O3": O3_flag,
             "O4": O4_flag,
             "O5": O5_flag
-        }
-    
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/set_binggo_wining_pattern`, payload)
-        .then(res => {
+        }).then(res => {
             if(res.data.status === "SUCCESS"){
+                alert("Pattern Saved")
                 document.getElementById("GetPattern").remove()
                 document.getElementById("DrawBall").classList.remove("d-none")
                 document.getElementById("BingoStart").classList.remove("d-none")
             }
             console.log(res);
             console.log(res.data);
-        })
-
-
-        // let getPattern = document.getElementsByClassName('pattern marked')
-        // let patternObj = []
-
-        // for(let i = 0; getPattern.length > i; i++){
-
-        //     let data = getPattern[i].getAttribute('data-cell')
-        //     patternObj.push(data)
-
-        // }
-
-        // this.setState({get_winning_pattern: patternObj})
+        }).catch(err => {
+            console.log(err)
+        });
 
     }
 
     CheckWinningPatternExist = () => {
 
-        let data = {
+        API.post(`Binggo/fetch_draw_logs`, {
             binggo_event_id: room
-        }
+        }).then(res => {
+            
+        }).catch(err => {
+            console.log(err)
+        });
 
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, data)
-        .then(res => {
-
-        })
     }
 
     BingoStart = (e) => {
-        console.log(this.state.get_winning_pattern)
+
+        API.post(`Binggo/start_game`, {
+            binggo_event_id: room
+        }).then(res => {
+            if(res.data.status === "SUCCESS"){
+                alert("Event Start")
+                document.getElementById("DrawBall").classList.remove("d-none")
+                document.getElementById("BingoStart").remove()
+                socket.emit('eventStart', true);
+            }
+            console.log(res);
+            console.log(res.data);
+        }).catch(err => {
+            console.log(err)
+        });
+
     }
 
     populateBallsArray = () => {
@@ -345,26 +349,18 @@ class Game extends Component {
 
 
                 socket.emit('drawBall', _ball);
-                
 
-                let insertDraw = {
+                API.post(`Binggo/insert_draw_logs`, {
                     binggo_event_id: room,
                     binggo_draw: _ball,
                     bdl_created_by: user_id
-                }
-        
-                api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/insert_draw_logs`, insertDraw)
-                .then(res => {
-        
-                    if(res.data.status === "SUCCESS"){
+                }).then(res => {
 
-                        let getAllDraw = {
+                    if(res.data.status === "SUCCESS"){
+                    
+                        API.post(`Binggo/fetch_draw_logs`, {
                             binggo_event_id: room
-                        }
-                
-                        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, getAllDraw)
-                        .then(res => {
-                
+                        }).then(res => {
                             if(res.data.status === "SUCCESS"){
 
                                 for(let i = 0; res.data.payload.length > i; i ++ ){
@@ -378,15 +374,19 @@ class Game extends Component {
                             }else{
                 
                             }
-        
-                        })
-                        
+                        }).catch(err => {
+                            console.log(err)
+                        });
+
                     }else{
-        
+
                     }
 
-                })
 
+                }).catch(err => {
+                    console.log(err)
+                });
+                
         
             //     BINGO.popBall( _ball )
             //          .updateDrawHistory( _ball )

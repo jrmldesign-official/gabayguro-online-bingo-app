@@ -7,8 +7,12 @@ var socket = io.connect('http://localhost:4000')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
-var api = axios.create({
+
+const API = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+    },
 });
 
 class Game extends Component {
@@ -89,7 +93,24 @@ class Game extends Component {
             console.log(message)
         });
 
-        
+        socket.on('eventStartTrigger', message => {
+
+
+            if(message.text === 'true' || message.text === true){
+
+                if(document.getElementById("select_card") === 'null' || document.getElementById("select_card") === null){
+
+                }else{
+                    document.getElementById("select_card").click()
+                }
+            
+            }else{
+
+            }
+            
+          
+        });
+
         this.getPrices();
         this.getWinningPattern();
         this.getUserDetails();
@@ -115,7 +136,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, fetchDrawLogs)
+        API.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, fetchDrawLogs)
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
@@ -155,52 +176,55 @@ class Game extends Component {
     }
     
     getWinningPattern = () => {
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, 
-        { 
-            binggo_event_id: localStorage.room_id,
-        })
-        .then(res => {
 
-            if(res.data.payload[0].B1 === "1") { document.querySelector(".B1").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].B2 === "1") { document.querySelector(".B2").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].B3 === "1") { document.querySelector(".B3").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].B4 === "1") { document.querySelector(".B4").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].B5 === "1") { document.querySelector(".B5").setAttribute("data-pattern", false) }
+        API.post(`Binggo/fetch_winning_pattern`, {
+            binggo_event_id: localStorage.room_id
+        }).then(res => {
+            if(res.data.status === "SUCCESS"){
 
-            if(res.data.payload[0].I1 === "1") { document.querySelector(".I1").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].I2 === "1") { document.querySelector(".I2").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].I3 === "1") { document.querySelector(".I3").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].I4 === "1") { document.querySelector(".I4").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].I5 === "1") { document.querySelector(".I5").setAttribute("data-pattern", false) }
+                if(res.data.payload[0].B1 === "1") { document.querySelector(".B1").setAttribute("data-pattern", false); document.querySelector(".B1").classList.add("marked") }
+                if(res.data.payload[0].B2 === "1") { document.querySelector(".B2").setAttribute("data-pattern", false); document.querySelector(".B2").classList.add("marked") }
+                if(res.data.payload[0].B3 === "1") { document.querySelector(".B3").setAttribute("data-pattern", false); document.querySelector(".B3").classList.add("marked") }
+                if(res.data.payload[0].B4 === "1") { document.querySelector(".B4").setAttribute("data-pattern", false); document.querySelector(".B4").classList.add("marked") }
+                if(res.data.payload[0].B5 === "1") { document.querySelector(".B5").setAttribute("data-pattern", false); document.querySelector(".B5").classList.add("marked") }
 
-            if(res.data.payload[0].N1 === "1") { document.querySelector(".N1").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].N2 === "1") { document.querySelector(".N2").setAttribute("data-pattern", false) }
-            // if(res.data.payload[0].N3 === "1") { document.querySelector(".N3").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].N4 === "1") { document.querySelector(".N4").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].N5 === "1") { document.querySelector(".N5").setAttribute("data-pattern", false) }
+                if(res.data.payload[0].I1 === "1") { document.querySelector(".I1").setAttribute("data-pattern", false); document.querySelector(".I1").classList.add("marked") }
+                if(res.data.payload[0].I2 === "1") { document.querySelector(".I2").setAttribute("data-pattern", false); document.querySelector(".I2").classList.add("marked") }
+                if(res.data.payload[0].I3 === "1") { document.querySelector(".I3").setAttribute("data-pattern", false); document.querySelector(".I3").classList.add("marked") }
+                if(res.data.payload[0].I4 === "1") { document.querySelector(".I4").setAttribute("data-pattern", false); document.querySelector(".I4").classList.add("marked") }
+                if(res.data.payload[0].I5 === "1") { document.querySelector(".I5").setAttribute("data-pattern", false); document.querySelector(".I5").classList.add("marked") }
 
-            if(res.data.payload[0].G1 === "1") { document.querySelector(".G1").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].G2 === "1") { document.querySelector(".G2").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].G3 === "1") { document.querySelector(".G3").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].G4 === "1") { document.querySelector(".G4").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].G5 === "1") { document.querySelector(".G5").setAttribute("data-pattern", false) }
+                if(res.data.payload[0].N1 === "1") { document.querySelector(".N1").setAttribute("data-pattern", false); document.querySelector(".N1").classList.add("marked") }
+                if(res.data.payload[0].N2 === "1") { document.querySelector(".N2").setAttribute("data-pattern", false); document.querySelector(".N2").classList.add("marked") }
+                // if(res.data.payload[0].N3 === "1") { document.querySelector(".N3").setAttribute("data-pattern", false) }
+                if(res.data.payload[0].N4 === "1") { document.querySelector(".N4").setAttribute("data-pattern", false); document.querySelector(".N3").classList.add("marked") }
+                if(res.data.payload[0].N5 === "1") { document.querySelector(".N5").setAttribute("data-pattern", false); document.querySelector(".N3").classList.add("marked") }
 
-            if(res.data.payload[0].O1 === "1") { document.querySelector(".O1").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].O2 === "1") { document.querySelector(".O2").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].O3 === "1") { document.querySelector(".O3").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].O4 === "1") { document.querySelector(".O4").setAttribute("data-pattern", false) }
-            if(res.data.payload[0].O5 === "1") { document.querySelector(".O5").setAttribute("data-pattern", false) }
+                if(res.data.payload[0].G1 === "1") { document.querySelector(".G1").setAttribute("data-pattern", false); document.querySelector(".G1").classList.add("marked") }
+                if(res.data.payload[0].G2 === "1") { document.querySelector(".G2").setAttribute("data-pattern", false); document.querySelector(".G2").classList.add("marked") }
+                if(res.data.payload[0].G3 === "1") { document.querySelector(".G3").setAttribute("data-pattern", false); document.querySelector(".G3").classList.add("marked") }
+                if(res.data.payload[0].G4 === "1") { document.querySelector(".G4").setAttribute("data-pattern", false); document.querySelector(".G4").classList.add("marked") }
+                if(res.data.payload[0].G5 === "1") { document.querySelector(".G5").setAttribute("data-pattern", false); document.querySelector(".G5").classList.add("marked") }
 
-        })
-        .catch(err => {
+                if(res.data.payload[0].O1 === "1") { document.querySelector(".O1").setAttribute("data-pattern", false); document.querySelector(".O1").classList.add("marked")}
+                if(res.data.payload[0].O2 === "1") { document.querySelector(".O2").setAttribute("data-pattern", false); document.querySelector(".O2").classList.add("marked")}
+                if(res.data.payload[0].O3 === "1") { document.querySelector(".O3").setAttribute("data-pattern", false); document.querySelector(".O3").classList.add("marked")}
+                if(res.data.payload[0].O4 === "1") { document.querySelector(".O4").setAttribute("data-pattern", false); document.querySelector(".O4").classList.add("marked")}
+                if(res.data.payload[0].O5 === "1") { document.querySelector(".O5").setAttribute("data-pattern", false); document.querySelector(".O5").classList.add("marked")}
+
+            }
+            console.log(res);
+            console.log(res.data);
+
+        }).catch(err => {
             console.log(err)
         });
-    }
 
+    }
 
     getUserDetails = () => {
 
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
+        API.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
         { 
             binggo_event_id: localStorage.room_id,
             user_id: localStorage.user_id 
@@ -440,7 +464,7 @@ class Game extends Component {
             "O5": document.querySelector(".O5").innerHTML
         }
 
-        api.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_card`, bingo_card_data)
+        API.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_card`, bingo_card_data)
         .then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("bingo-card").setAttribute("data-set", true)

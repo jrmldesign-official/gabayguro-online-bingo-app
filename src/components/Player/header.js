@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+const API = axios.create({
+    baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+    },
+});
+
 class header extends Component {
 
     state = {
@@ -15,19 +22,23 @@ class header extends Component {
     }
 
     getUserDetails = async () => {
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
-        .then(res => {
 
-            localStorage.setItem("name", res.data.payload[0].user_fullname)
+        API.post(`Useraccounts/fetch_user_details_by_user_id`, {
+            user_id: localStorage.user_id 
+        }).then(res => {
+            if(res.data.status === "SUCCESS"){
 
-            this.setState({
-                name: res.data.payload[0].user_fullname,
-            })
+                localStorage.setItem("name", res.data.payload[0].user_fullname)
 
-        })
-        .catch(err => {
+                this.setState({ name: res.data.payload[0].user_fullname })
+            }
+            console.log(res);
+            console.log(res.data);
+
+        }).catch(err => {
             console.log(err)
         });
+
     }
     
     
