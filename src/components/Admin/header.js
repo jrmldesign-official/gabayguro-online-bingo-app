@@ -5,7 +5,8 @@ var api = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+      'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token, Origin, Authorization',
     },
 });
 
