@@ -4,7 +4,7 @@ import io from 'socket.io-client'
 import axios from 'axios';
 import './style-admin.css';
 
-var socket = io.connect('https://gabayguro-bingo-game-test.herokuapp.com/')
+var socket = io.connect('http://localhost:4000')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
