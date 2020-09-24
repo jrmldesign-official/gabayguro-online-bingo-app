@@ -4,7 +4,11 @@ import '../../App.css'
 import axios from 'axios';
 
 var api = axios.create({
-  baseURL: 'https://binggo-test.dokyumento.asia/index.php/'
+  baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+  },
 });
 
 class Dashboard extends Component {
