@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import axios from 'axios';
 import './style.css';
 
-var socket = io.connect('https://gabayguro-bingo-game.herokuapp.com/')
+var socket = io.connect('https://gabayguro-bingo-game-test.herokuapp.com/')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
