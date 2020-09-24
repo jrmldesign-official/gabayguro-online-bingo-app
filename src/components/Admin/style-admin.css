@@ -1,0 +1,15 @@
+#bingo-body .row{
+    background: white;
+    height: 100vh;
+}
+
+.marked {
+    background: #d1d1d1 !important;
+}
+
+#winning-pattern-card tr td {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 0;
+    border: 1px solid black;
+  }

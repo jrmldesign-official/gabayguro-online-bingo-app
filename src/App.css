@@ -1,38 +1,54 @@
-.App {
-  text-align: center;
+/* GABAY GURO COLOR */
+
+/* #0f924 - green */
+/* #d51e2d - red */
+
+input:focus, textarea:focus, select:focus{
+  outline: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background: #f7f7f7;
+  outline: none !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.gg-text {
+  color: #209247;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.gg-bg {
+  background: #0f9247;
 }
 
-.App-link {
-  color: #61dafb;
+
+
+
+
+/* OVERRIDE BOOTSTRAP CLASS: start */
+.text-muted {
+  color: #209247 !important;
+}
+.btn {
+  border: 0;
+  border-top-right-radius: 0px;
+}
+/* OVERRIDE BOOTSTRAP CLASS: end */
+
+/* LOGIN PAGE: start */
+#login-body {
+  height: 100vh;
+}
+#gg-login-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.custorm-form-login {
+  background: #e6ebef;
+  border: 0;
+  border-top-right-radius: 0px;
 }
+/* LOGIN PAGE: end */
