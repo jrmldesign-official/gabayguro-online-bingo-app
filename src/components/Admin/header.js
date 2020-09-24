@@ -15,8 +15,15 @@ class header extends Component {
     }
 
     getUserDetails = async () => {
-        axios.post(`Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
-        .then(res => {
+
+        axios({
+            method: 'post',
+            url: 'Useraccounts/fetch_user_details_by_user_id',
+            data: {
+                user_id: localStorage.user_id
+            },
+            dataType: 'json'
+        }).then(res => {
 
             localStorage.setItem("name", res.data.payload[0].user_fullname)
 
@@ -24,10 +31,10 @@ class header extends Component {
                 name: res.data.payload[0].user_fullname,
             })
 
-        })
-        .catch(err => {
+        }).catch(err => {
             console.log(err)
         });
+
     }
     
     
