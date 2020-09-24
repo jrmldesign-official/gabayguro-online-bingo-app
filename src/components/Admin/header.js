@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+var api = axios.create({
+    baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+    headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+    },
+});
+
 class header extends Component {
 
     state = {
@@ -15,7 +23,7 @@ class header extends Component {
     }
 
     getUserDetails = async () => {
-        axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
+        api.post(`Useraccounts/fetch_user_details_by_user_id`, { user_id: localStorage.user_id })
         .then(res => {
 
             localStorage.setItem("name", res.data.payload[0].user_fullname)
