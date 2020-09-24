@@ -112,7 +112,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`Binggo/fetch_draw_logs`, fetchDrawLogs)
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, fetchDrawLogs)
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
@@ -152,7 +152,7 @@ class Game extends Component {
     }
     
     getWinningPattern = () => {
-        axios.post(`Binggo/fetch_winning_pattern`, 
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, 
         { 
             binggo_event_id: localStorage.room_id,
         })
@@ -197,7 +197,7 @@ class Game extends Component {
 
     getUserDetails = () => {
 
-        axios.post(`Binggo/select_event`, 
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
         { 
             binggo_event_id: localStorage.room_id,
             user_id: localStorage.user_id 
@@ -437,7 +437,7 @@ class Game extends Component {
             "O5": document.querySelector(".O5").innerHTML
         }
 
-        axios.post(`Binggo/select_card`, bingo_card_data)
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_card`, bingo_card_data)
         .then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("bingo-card").setAttribute("data-set", true)

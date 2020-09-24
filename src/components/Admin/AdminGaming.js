@@ -41,7 +41,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`Binggo/fetch_winning_pattern`, getWinningPattern)
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_winning_pattern`, getWinningPattern)
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
@@ -198,7 +198,7 @@ class Game extends Component {
             "O5": O5_flag
         }
     
-        axios.post(`Binggo/set_binggo_wining_pattern`, payload)
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/set_binggo_wining_pattern`, payload)
         .then(res => {
             if(res.data.status === "SUCCESS"){
                 document.getElementById("GetPattern").remove()
@@ -230,7 +230,7 @@ class Game extends Component {
             binggo_event_id: room
         }
 
-        axios.post(`Binggo/fetch_draw_logs`, data)
+        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, data)
         .then(res => {
 
         })
@@ -350,7 +350,7 @@ class Game extends Component {
                     bdl_created_by: user_id
                 }
         
-                axios.post(`Binggo/insert_draw_logs`, insertDraw)
+                axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/insert_draw_logs`, insertDraw)
                 .then(res => {
         
                     if(res.data.status === "SUCCESS"){
@@ -359,7 +359,7 @@ class Game extends Component {
                             binggo_event_id: room
                         }
                 
-                        axios.post(`Binggo/fetch_draw_logs`, getAllDraw)
+                        axios.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/fetch_draw_logs`, getAllDraw)
                         .then(res => {
                 
                             if(res.data.status === "SUCCESS"){
