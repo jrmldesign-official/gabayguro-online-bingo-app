@@ -17,12 +17,11 @@
     "socket.io-client": "^2.3.0"
   },
   "scripts": {
-    "dev": "react-scripts start",
-    "start": "serve -s build",
+    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "npm run build"
+    "dev": "(cd server && npm run start) & npm run start"
   },
   "eslintConfig": {
     "extends": "react-app"
