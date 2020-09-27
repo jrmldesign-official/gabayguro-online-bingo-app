@@ -16,7 +16,7 @@ const io = socketio(server);
 
 const botName = 'ChatCord Bot';
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 io.on('connection', socket => {
 

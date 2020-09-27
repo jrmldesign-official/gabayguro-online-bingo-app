@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import axios from 'axios';
 import './style.css';
 
-let hostUrl = window.location.protocol+"//"+window.location.hostname+":4000"
+let hostUrl = window.location.protocol+"//"+window.location.hostname
 
 var socket = io.connect(hostUrl)
 var room = localStorage.room_id
