@@ -31,17 +31,11 @@ class Game extends Component {
         BallCount: 75
     };
 
-    // constructor() {
-    //     super();     
-        
-    // }
-
     componentDidMount() {
 
         this.populateBallsArray();
 
         socket.emit('joinRoom', { username, room });
-
 
         socket.on('roomUsers', ({ room, users }) => {
             this.setState({ playersJoined: users })
@@ -60,6 +54,10 @@ class Game extends Component {
                             document.querySelector(".stepTwo").classList.remove("disabled")
                             document.querySelector(".stepTwo p").classList.add("font-weight-bolder") 
                             document.querySelector(".btnStartBingo").classList.remove("d-none")
+                        }else if(res.data.payload[0].binggo_status === "2"){
+                            document.querySelector(".stepThree").classList.remove("disabled")
+                            document.querySelector(".stepThree p").classList.add("font-weight-bolder") 
+                            document.querySelector(".btnDrawNumber").classList.remove("d-none")
                         }else{
                             
                         }
@@ -80,42 +78,37 @@ class Game extends Component {
                     elems[i].classList.remove("pattern");
                 }
 
-
                 if(res.data.payload[0].B1 === "1"){ document.getElementById("pattern-B1").classList.add("marked") }
                 if(res.data.payload[0].I1 === "1"){ document.getElementById("pattern-I1").classList.add("marked") }
                 if(res.data.payload[0].N1 === "1"){ document.getElementById("pattern-N1").classList.add("marked") }
                 if(res.data.payload[0].G1 === "1"){ document.getElementById("pattern-G1").classList.add("marked") }
                 if(res.data.payload[0].O1 === "1"){ document.getElementById("pattern-O1").classList.add("marked") }
-
                 if(res.data.payload[0].B2 === "1"){ document.getElementById("pattern-B2").classList.add("marked") }
                 if(res.data.payload[0].I2 === "1"){ document.getElementById("pattern-I2").classList.add("marked") }
                 if(res.data.payload[0].N2 === "1"){ document.getElementById("pattern-N2").classList.add("marked") }
                 if(res.data.payload[0].G2 === "1"){ document.getElementById("pattern-G2").classList.add("marked") }
                 if(res.data.payload[0].O2 === "1"){ document.getElementById("pattern-O2").classList.add("marked") }
-
                 if(res.data.payload[0].B3 === "1"){ document.getElementById("pattern-B3").classList.add("marked") }
                 if(res.data.payload[0].I3 === "1"){ document.getElementById("pattern-I3").classList.add("marked") }
-                // if(res.data.payload[0].N3 === "1"){ document.getElementById("pattern-N3").classList.add("marked") } FREE
                 if(res.data.payload[0].G3 === "1"){ document.getElementById("pattern-G3").classList.add("marked") }
                 if(res.data.payload[0].O3 === "1"){ document.getElementById("pattern-O3").classList.add("marked") }
-
                 if(res.data.payload[0].B4 === "1"){ document.getElementById("pattern-B4").classList.add("marked") }
                 if(res.data.payload[0].I4 === "1"){ document.getElementById("pattern-I4").classList.add("marked") }
                 if(res.data.payload[0].N4 === "1"){ document.getElementById("pattern-N4").classList.add("marked") }
                 if(res.data.payload[0].G4 === "1"){ document.getElementById("pattern-G4").classList.add("marked") }
                 if(res.data.payload[0].O4 === "1"){ document.getElementById("pattern-O4").classList.add("marked") }
-
                 if(res.data.payload[0].B5 === "1"){ document.getElementById("pattern-B5").classList.add("marked") }
                 if(res.data.payload[0].I5 === "1"){ document.getElementById("pattern-I5").classList.add("marked") }
                 if(res.data.payload[0].N5 === "1"){ document.getElementById("pattern-N5").classList.add("marked") }
                 if(res.data.payload[0].G5 === "1"){ document.getElementById("pattern-G5").classList.add("marked") }
                 if(res.data.payload[0].O5 === "1"){ document.getElementById("pattern-O5").classList.add("marked") }
 
-
             }else{
+
+                document.querySelector(".stepOne").classList.remove("disabled")
+                document.querySelector(".stepOne p").classList.add("font-weight-boler")
                 document.querySelector(".btnWinningPattern").classList.remove("d-none")
-                document.querySelector(".stepOne p").classList.add("font-weight-bolder")
-                document.querySelector(".stepOne").classList.remove("d-none")
+                
             }
 
         }).catch(err => {
@@ -126,9 +119,8 @@ class Game extends Component {
             binggo_event_id: room
         }).then(res => {
 
-            if(res.data.status === "SUCCESS"){
 
-                alert("trigger fetch")
+            if(res.data.status === "SUCCESS"){
 
                 for(var i = 0; res.data.payload.length > i; i ++ ){
                     CollectDraw.push(res.data.payload[i].binggo_draw)
@@ -145,14 +137,9 @@ class Game extends Component {
                 socket.emit('drawAllBall', CollectDraw);
 
                 if(res.data.payload.length === 75){
-                    alert("CONSUMED MOTHER FUCKER")
                     document.querySelector(".btnDrawNumber").remove()
                     document.querySelector(".stepThree").classList.add("disabled")
                     document.querySelector(".stepThree p").classList.remove("font-weight-bolder") 
-
-                    document.querySelector(".btnBingo").classList.remove("d-none")
-                    document.querySelector(".stepFour").classList.remove("disabled")
-                    document.querySelector(".stepFour p").classList.add("font-weight-bolder")
 
                 }else{
                     document.querySelector(".stepThree").classList.remove("disabled")
@@ -164,11 +151,6 @@ class Game extends Component {
                 
             }else{
 
-                alert("mother fucker")
-                document.querySelector(".stepThree").classList.remove("disabled")
-                document.querySelector(".stepThree p").classList.add("font-weight-bolder") 
-                document.querySelector(".btnDrawNumber").classList.remove("d-none")
-
             }
         }).catch(err => {
             console.log(err)
@@ -179,7 +161,7 @@ class Game extends Component {
 
     viewPattern = () => {
         document.querySelector("#setWinningPattern .modal-title").innerHTML = "View Winning Pattern"
-        document.getElementById("GetPattern").remove()
+        document.getElementById("GetPattern").classList.add("d-none")
     }
 
     Setppattern = (event) => {
@@ -194,25 +176,20 @@ class Game extends Component {
         let N1 = document.querySelector("#pattern-N1").classList.contains("marked")
         let G1 = document.querySelector("#pattern-G1").classList.contains("marked")
         let O1 = document.querySelector("#pattern-O1").classList.contains("marked")
-
         let B2 = document.querySelector("#pattern-B2").classList.contains("marked")
         let I2 = document.querySelector("#pattern-I2").classList.contains("marked")
         let N2 = document.querySelector("#pattern-N2").classList.contains("marked")
         let G2 = document.querySelector("#pattern-G2").classList.contains("marked")
         let O2 = document.querySelector("#pattern-O2").classList.contains("marked")
-
         let B3 = document.querySelector("#pattern-B3").classList.contains("marked")
         let I3 = document.querySelector("#pattern-I3").classList.contains("marked")
-        // let N3 = document.querySelector("#pattern-N3").classList.contains("marked") //FREE
         let G3 = document.querySelector("#pattern-G3").classList.contains("marked")
         let O3 = document.querySelector("#pattern-O3").classList.contains("marked")
-
         let B4 = document.querySelector("#pattern-B4").classList.contains("marked")
         let I4 = document.querySelector("#pattern-I4").classList.contains("marked")
         let N4 = document.querySelector("#pattern-N4").classList.contains("marked")
         let G4 = document.querySelector("#pattern-G4").classList.contains("marked")
         let O4 = document.querySelector("#pattern-O4").classList.contains("marked")
-
         let B5 = document.querySelector("#pattern-B5").classList.contains("marked")
         let I5 = document.querySelector("#pattern-I5").classList.contains("marked")
         let N5 = document.querySelector("#pattern-N5").classList.contains("marked")
@@ -233,7 +210,6 @@ class Game extends Component {
 
         if(B3 === true) { var B3_flag = 1 } else { var B3_flag = 0 }
         if(I3 === true) { var I3_flag = 1 } else { var I3_flag = 0 }
-        // if(N3 === true) { var N3_flag = 1 } else { var N3_flag = 0 } // FREE
         if(G3 === true) { var G3_flag = 1 } else { var G3_flag = 0 }
         if(O3 === true) { var O3_flag = 1 } else { var O3_flag = 0 }
 
@@ -280,29 +256,15 @@ class Game extends Component {
         }).then(res => {
             if(res.data.status === "SUCCESS"){
 
-                document.querySelector(".btnWinningPattern").classList.add("d-none")
-                document.querySelector(".stepOne p").classList.remove("font-weight-bolder")
                 document.querySelector(".stepOne").classList.add("disabled")
-
-                document.querySelector(".btnStartBingo").classList.remove("d-none")
-                document.querySelector(".stepTwo p").classList.add("font-weight-bolder")
+                document.querySelector(".stepOne p").classList.remove("font-weight-boler")
+                document.querySelector(".btnWinningPattern").classList.add("d-none")
                 document.querySelector(".stepTwo").classList.remove("disabled")
-
+                document.querySelector(".stepTwo p").classList.add("font-weight-boler")
+                document.querySelector(".btnStartBingo").classList.remove("d-none")
                 document.querySelector(".close").click()
             }
 
-        }).catch(err => {
-            console.log(err)
-        });
-
-    }
-
-    CheckWinningPatternExist = () => {
-
-        API.post(`Binggo/fetch_draw_logs`, {
-            binggo_event_id: room
-        }).then(res => {
-            
         }).catch(err => {
             console.log(err)
         });
@@ -326,8 +288,19 @@ class Game extends Component {
 
                 socket.emit('eventStart', true);
             }
-            console.log(res);
-            console.log(res.data);
+
+        }).catch(err => {
+            console.log(err)
+        });
+
+    }
+
+    CheckWinningPatternExist = () => {
+
+        API.post(`Binggo/fetch_draw_logs`, {
+            binggo_event_id: room
+        }).then(res => {
+            
         }).catch(err => {
             console.log(err)
         });
@@ -427,13 +400,7 @@ class Game extends Component {
 
         let test = document.getElementById("winning-pattern-card").getAttribute("data-set")
 
-        if(test === 'false' || test === false){
-
-            alert("Please set your winning pattern first.")
-
-        }else{
-
-            var _ball = this.RandomBallSelector();
+        var _ball = this.RandomBallSelector();
             const _drawnNumber = parseInt( _ball.split( '-' )[ 1 ] );
             var total = this.state.totalDraw++
         
@@ -518,8 +485,6 @@ class Game extends Component {
                 
         
             }
-
-        }
 
     
     };

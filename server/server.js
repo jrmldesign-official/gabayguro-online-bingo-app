@@ -35,6 +35,10 @@ io.on('connection', socket => {
       users: getRoomUsers(user.room)
     });
 
+    console.log(user.username + " has joined the chat")
+
+    
+
   });
 
   socket.on('eventStart', msg => {
