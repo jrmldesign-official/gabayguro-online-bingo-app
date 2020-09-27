@@ -39,6 +39,7 @@ export default class Login extends React.Component {
     axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}`)
       .then(res => {
         if(res.data.status === "SUCCESS"){
+          alert(res.data.payload.user_type)
           localStorage.setItem("user_id", res.data.payload.user_id)
           window.location.href = "/admin-dashboard"
         }

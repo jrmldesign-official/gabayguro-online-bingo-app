@@ -25,7 +25,7 @@ body {
 
 
 /* OVERRIDE BOOTSTRAP CLASS: start */
-.text-muted {
+.text-green {
   color: #209247 !important;
 }
 .btn {
