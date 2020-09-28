@@ -4,9 +4,7 @@ import io from 'socket.io-client'
 import axios from 'axios';
 import './style-admin.css';
 
-let hostUrl = window.location.protocol+"//"+window.location.hostname
-
-var socket = io.connect('https://gabayguro-bingo-game.herokuapp.com/')
+var socket = io.connect('https://gabayguro-bingo-server.herokuapp.com/')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
@@ -398,11 +396,8 @@ class Game extends Component {
 
         document.getElementById("drawBuffer").classList.remove("d-none")
 
-        let test = document.getElementById("winning-pattern-card").getAttribute("data-set")
-
         var _ball = this.RandomBallSelector();
-            const _drawnNumber = parseInt( _ball.split( '-' )[ 1 ] );
-            var total = this.state.totalDraw++
+            // const _drawnNumber = parseInt( _ball.split( '-' )[ 1 ] );
         
             if( this.state.BallCount > 0 ) {
 
