@@ -4,7 +4,9 @@ import io from 'socket.io-client'
 import axios from 'axios';
 import './style-admin.css';
 
-var socket = io()
+let hostUrl = window.location.protocol+"//"+window.location.hostname+":4000"
+
+var socket = io.connect(hostUrl)
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
