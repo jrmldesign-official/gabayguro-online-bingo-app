@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Header from './header';
-import '../../App.css'
 import axios from 'axios';
 
 var api = axios.create({
@@ -53,32 +52,52 @@ class Dashboard extends Component {
 
         <div className="container-fluid mt-3">
           <div className="row">
-            <div className="col-xl-4">
-              <div className="card rounded-0">
-                <h5 className="card-header text-center">List of Bingo Event</h5>
+            <div className="col-xl-8">
+              <div className="card rounded-0 shadow-sm">
                 <div className="card-body">
-
-                  <form onSubmit={this.handleSubmit}>
-
-                    {
-                      this.state.listevents.length > 0 ? (
-                          <select className="custom-select rounded-0 mb-3" value={this.state.room_id} data-id={this.state.keyvalue} onChange={this.getRoomId}>
-                              <option>Select Bingo Event</option>
-                              {this.state.listevents.map((list, index) => 
-                                  <option key={list.binggo_event_id} data-id={index} value={list.binggo_event_id} >{list.binggo_title}</option>
-                              )}
-                          </select>
-                          
-                      ):(
-                          <span></span>
-                      )
-                    }
-
-                    <button type="submit" className="btn btn-primary btn-block">Join</button>
-
-                  </form>
-
+                  <p class="mb-5 panel-title float-right">DASHBOARD</p>
                 </div>
+              </div>
+            </div>
+            <div className="col-xl-4">
+              <div className="row">
+                {/* section:start */}
+                <div className="col-xl-12">
+                  <div className="card rounded-0 shadow-sm">
+                    <div className="card-body">
+                      <p class="mb-3 panel-title float-right">BINGO EVENTS</p>
+                      <form onSubmit={this.handleSubmit}>
+
+                        {
+                          this.state.listevents.length > 0 ? (
+                              <select className="custom-select rounded-0 mb-3" value={this.state.room_id} data-id={this.state.keyvalue} onChange={this.getRoomId}>
+                                  <option>Select Bingo Event</option>
+                                  {this.state.listevents.map((list, index) => 
+                                      <option key={list.binggo_event_id} data-id={index} value={list.binggo_event_id} >{list.binggo_title}</option>
+                                  )}
+                              </select>
+                              
+                          ):(
+                              <span></span>
+                          )
+                        }
+
+                        <button type="submit" className="btn btn-primary btn-block">Join</button>
+
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-xl-12 mt-3">
+                  <div className="card rounded-0 shadow-sm">
+                    <div className="card-body">
+                      <p class="mb-3 panel-title float-right">Recent Activities</p>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>

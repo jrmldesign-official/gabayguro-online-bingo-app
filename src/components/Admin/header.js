@@ -50,7 +50,7 @@ class header extends Component {
 
         return (
             <div>
-                <nav className="navbar navbar-expand-lg" style={{backgroundColor: '#0f9247'}}>
+                <nav id="admin-nav" className="navbar navbar-expand-lg shadow-sm">
                     <a className="navbar-brand text-white" href="/admin-dashboard">GabayGuro's Online Bingo | Admin Dashboard</a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>

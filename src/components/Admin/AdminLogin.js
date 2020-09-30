@@ -39,9 +39,12 @@ export default class Login extends React.Component {
     axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}`)
       .then(res => {
         if(res.data.status === "SUCCESS"){
-          alert(res.data.payload.user_type)
-          localStorage.setItem("user_id", res.data.payload.user_id)
-          window.location.href = "/admin-dashboard"
+          if(res.data.payload.user_type === 'admin'){
+            localStorage.setItem("user_id", res.data.payload.user_id)
+            window.location.href = "/admin-dashboard"
+          }else{
+            alert("hindi siya admin")
+          }
         }
         console.log(res);
         console.log(res.data);
@@ -68,10 +71,10 @@ export default class Login extends React.Component {
     return (
       <div className="container-fluid">
         <div id="login-body" className="row justify-content-center">
-            <div className="col-10 col-sm-6 col-md-5 col-xl-4 pos-relative">
-              <div id="gg-login-container" className="card rounded-0 border-0 shadow-sm p-3">
+            <div className="col-10 col-sm-6 col-md-5 col-xl-3 pos-relative">
+              <div id="gg-login-container" className="card rounded-0 border-0 shadow p-3">
 
-                  <h3 className="mb-5 text-center">ADMIN</h3>
+                  <h3 className="mb-3 mt-3 text-center" style={{ fontWeight: 700 }}>ADMIN</h3>
 
                   <form className="row" onSubmit={this.handleSubmit}>
                   {

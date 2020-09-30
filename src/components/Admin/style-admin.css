@@ -1,10 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500;900&display=swap');
+
 body {
-    overflow: hidden !important;
+    font-family: 'Roboto', sans-serif;
+    background: #f4f4f4;
 }
 
-#bingo-body .row{
-    background: white;
+#bingo-body{
     height: 100vh;
+    background: #ffffff !important;
 }
 
 .marked {

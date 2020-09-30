@@ -8,7 +8,7 @@ export default class Login extends React.Component {
     this.state = {
       name: '',
       email: '',
-      error: '',
+      error: ''
     };
 
     this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -48,8 +48,11 @@ export default class Login extends React.Component {
     axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}`)
       .then(res => {
         if(res.data.status === "SUCCESS"){
-          localStorage.setItem("user_id", res.data.payload.user_id)
-          window.location.href = "/bingo"
+          if(res.data.payload.user_type === 'admin'){
+          }else{
+            localStorage.setItem("user_id", res.data.payload.user_id)
+            window.location.href = "/bingo"
+          }
         }
         console.log(res);
         console.log(res.data);
@@ -77,10 +80,10 @@ export default class Login extends React.Component {
       <div className="container-fluid">
         <div id="login-body" className="row justify-content-center">
             <div className="col-10 col-sm-6 col-md-5 col-xl-4 pos-relative">
-              <div id="gg-login-container" className="card rounded-0 border-0 shadow-sm p-3">
-                  <a href="/register" className="small text-right mb-5">Register here</a>
+              <div id="gg-login-container" className="card rounded-0 border-0 shadow p-3">
+                  <a href="/register" className="small text-right mb-3">Register here</a>
 
-                  <h3 className="mb-5">GabayGuro Bingo 2020</h3>
+                  <h3 className="mb-3 title text-center">BINGO</h3>
 
                   <form className="row" onSubmit={this.handleSubmit}>
                   {

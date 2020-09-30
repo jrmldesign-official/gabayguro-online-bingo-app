@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Header from './header';
 import io from 'socket.io-client'
 import axios from 'axios';
-import './style-admin.css';
 
 var socket = io.connect('https://gabayguro-bingo-server.herokuapp.com/')
 var room = localStorage.room_id
@@ -25,13 +24,13 @@ class Game extends Component {
         get_winning_pattern: [],
         BallsArr: [],
         drawLogs: [],
-        totalDraw: '0',
-        BallCount: 75
+        totalDraw: 0,
+        BallCount: 75,
+        maxGame: [],
+        gamePhase: ''
     };
 
-    componentDidMount() {
-
-        this.populateBallsArray();
+    componentDidMount() {   
 
         socket.emit('joinRoom', { username, room });
 
@@ -39,15 +38,61 @@ class Game extends Component {
             this.setState({ playersJoined: users })
         });
 
+        socket.on('broadcaseWinner', message => {
+            API.post(`Binggo/end_game`, {
+                binggo_event_id: room
+            }).then(res => {
+                if(res.data.status === "SUCCESS"){
+                    socket.emit('endGame', "restart");
+                    window.location.reload()
+                }
+            }).catch(err => {
+                console.log(err)
+            });
+        });
+
+        API.post(`Binggo/fetch_binggo_event_by_id`, {
+            binggo_event_id: room
+        }).then(res => {
+            if(res.data.status === "SUCCESS"){
+
+                var total_game = parseInt(res.data.payload[0].binggo_max_game_total) + 1
+                var game_remaining = res.data.payload[0].binggo_max_game
+
+                var game_played = total_game - game_remaining
+
+                this.setState({ gamePhase:game_played })
+
+                if(parseInt(game_remaining) === 0){
+                    document.getElementById("triggerEndGame").click()
+                }
+                console.log("PHASE: "+ this.state.gamePhase)
+            }
+        }).catch(err => {
+            console.log(err)
+        });
+
         API.post(`Binggo/fetch_winning_pattern`, { 
             binggo_event_id: room
         }).then(res => {
+
             if(res.data.status === "SUCCESS"){
 
                 API.post(`Binggo/fetch_binggo_event_by_id`, {
                     binggo_event_id: room
                 }).then(res => {
+
                     if(res.data.status === "SUCCESS"){
+
+                        var total_game = parseInt(res.data.payload[0].binggo_max_game_total) + 1
+                        var game_remaining = res.data.payload[0].binggo_max_game
+                        var gameStatus = res.data.payload[0].binggo_status
+                        var game_played = total_game - game_remaining
+
+                        this.setState({ gamePhase:game_played })
+
+                        console.log("PHASE: "+ this.state.gamePhase)
+
                         if(res.data.payload[0].binggo_status === "1"){
                             document.querySelector(".stepTwo").classList.remove("disabled")
                             document.querySelector(".stepTwo p").classList.add("font-weight-bolder") 
@@ -59,6 +104,61 @@ class Game extends Component {
                         }else{
                             
                         }
+
+                        console.log("--trigger--")
+
+                        API.post(`Binggo/fetch_draw_logs`, {
+                            binggo_event_id: room,
+                            binggo_event_count: this.state.gamePhase
+                        }).then(res => {
+                
+                            if(res.data.status === "SUCCESS"){
+                                
+                                console.log("NAUNA")
+                                for(var i = 0; res.data.payload.length > i; i ++ ){
+                                    CollectDraw.push(res.data.payload[i].binggo_draw)
+                                    document.getElementById(`js-caller-${res.data.payload[i].binggo_draw}`).classList.add("marked")
+                                    if(res.data.payload.length === i+1){
+                                        setTimeout(function(){
+                                            document.querySelector(".list-draw").firstChild.innerHTML = `<b class="text-primary">Current Draw:</b> "${res.data.payload[0].binggo_draw}"`
+                                        })
+                                    }
+                                }
+                
+                                this.setState({ totalDraw: res.data.payload.length })
+                                this.setState({ drawLogs : CollectDraw })
+                                socket.emit('drawAllBall', CollectDraw);
+
+                                console.log("--trigger--1")
+                                this.populateBallsArray();
+                
+                                if(res.data.payload.length === 75){
+                                    document.querySelector(".btnDrawNumber").remove()
+                                    document.querySelector(".stepThree").classList.add("disabled")
+                                    document.querySelector(".stepThree p").classList.remove("font-weight-bolder") 
+                                    if(parseInt(gameStatus) === 2){
+                                        document.querySelector(".btnBingo").classList.remove("d-none")
+                                        document.querySelector(".stepFour").classList.remove("disabled")
+                                        document.querySelector(".stepFour p").classList.add("font-weight-bolder")
+                                    }
+                
+                                }else{
+                                    document.querySelector(".stepThree").classList.remove("disabled")
+                                    document.querySelector(".stepThree p").classList.add("font-weight-bolder") 
+                                    document.querySelector(".btnDrawNumber").classList.remove("d-none")
+                                }
+                
+                                CollectDraw = []
+                                
+                            }else{
+                                this.populateBallsArray();
+                                console.log("--trigger--1")
+                            }
+                        }).catch(err => {
+                            console.log(err)
+                        });
+
+
                     }
                 }).catch(err => {
                     console.log(err)
@@ -106,54 +206,13 @@ class Game extends Component {
                 document.querySelector(".stepOne").classList.remove("disabled")
                 document.querySelector(".stepOne p").classList.add("font-weight-boler")
                 document.querySelector(".btnWinningPattern").classList.remove("d-none")
+                this.populateBallsArray();
                 
             }
 
         }).catch(err => {
-            console.log(err)
+            this.populateBallsArray();
         });
-
-        API.post(`Binggo/fetch_draw_logs`, {
-            binggo_event_id: room
-        }).then(res => {
-
-
-            if(res.data.status === "SUCCESS"){
-
-                for(var i = 0; res.data.payload.length > i; i ++ ){
-                    CollectDraw.push(res.data.payload[i].binggo_draw)
-                    document.getElementById(`js-caller-${res.data.payload[i].binggo_draw}`).classList.add("marked")
-                    if(res.data.payload.length === i+1){
-                        setTimeout(function(){
-                            document.querySelector(".list-draw").firstChild.innerHTML = `<b class="text-primary">Current Draw:</b> "${res.data.payload[0].binggo_draw}"`
-                        })
-                    }
-                }
-
-                this.setState({ totalDraw: res.data.payload.length })
-                this.setState({ drawLogs : CollectDraw })
-                socket.emit('drawAllBall', CollectDraw);
-
-                if(res.data.payload.length === 75){
-                    document.querySelector(".btnDrawNumber").remove()
-                    document.querySelector(".stepThree").classList.add("disabled")
-                    document.querySelector(".stepThree p").classList.remove("font-weight-bolder") 
-
-                }else{
-                    document.querySelector(".stepThree").classList.remove("disabled")
-                    document.querySelector(".stepThree p").classList.add("font-weight-bolder") 
-                    document.querySelector(".btnDrawNumber").classList.remove("d-none")
-                }
-
-                CollectDraw = []
-                
-            }else{
-
-            }
-        }).catch(err => {
-            console.log(err)
-        });
-
 
     }
 
@@ -296,7 +355,8 @@ class Game extends Component {
     CheckWinningPatternExist = () => {
 
         API.post(`Binggo/fetch_draw_logs`, {
-            binggo_event_id: room
+            binggo_event_id: room,
+            binggo_event_count: this.state.gamePhase
         }).then(res => {
             
         }).catch(err => {
@@ -329,8 +389,18 @@ class Game extends Component {
     
         }
 
+        // console.log("ORIGINAL FORMAT")
+        // console.log(populate)
+
+        for(let i = 0; this.state.drawLogs.length > i; i++){
+            const _ballIndex = populate.indexOf( this.state.drawLogs[i] );
+            if ( _ballIndex > -1 ) populate.splice( _ballIndex, 1 );
+        }
+
+        // console.log("NEW FORMAT")
+        // console.log(populate)
+
         this.setState({BallsArr: populate})
-    
     };
 
     IsValidNumber = ( num, arr = [] ) => {
@@ -405,18 +475,19 @@ class Game extends Component {
 
                     binggo_event_id: room,
                     binggo_draw: _ball,
-                    bdl_created_by: user_id
+                    bdl_created_by: user_id,
+                    binggo_event_count: this.state.gamePhase
 
                 }).then(res => {
 
                     if(res.data.status === "SUCCESS"){
 
-                        this.state.BallCount--;
-
-
+                        
                         API.post(`Binggo/fetch_draw_logs`, {
-                            binggo_event_id: room
+                            binggo_event_id: room,
+                            binggo_event_count: this.state.gamePhase
                         }).then(res => {
+
                             if(res.data.status === "SUCCESS"){
 
                                 for(var i = 0; res.data.payload.length > i; i ++ ){
@@ -429,6 +500,16 @@ class Game extends Component {
                                     }
                                 }
 
+                                let countAllDraw = res.data.payload.length
+                                let getBallCount = this.state.BallCount
+
+                                let total = getBallCount - countAllDraw
+
+                    
+
+                                
+
+
                                 this.setState({ totalDraw: res.data.payload.length })
                                 this.setState({ drawLogs : CollectDraw })
                                 socket.emit('drawAllBall', CollectDraw);
@@ -438,7 +519,7 @@ class Game extends Component {
                                 document.getElementById("drawBuffer").classList.add("d-none")
                                 btnDrawBall.removeAttribute("disabled")
                                 
-                                if( this.state.BallCount === 0 ) {
+                                if( total === 0 ) {
 
                                     document.querySelector(".btnDrawNumber").remove()
                                     document.querySelector(".stepThree").classList.add("disabled")
@@ -452,7 +533,7 @@ class Game extends Component {
 
                                 CollectDraw = []
 
-                                console.log("BALL COUNT" + this.state.BallCount)
+                                console.log("BALL COUNT" + total)
                                 
                             }else{
 
@@ -460,15 +541,6 @@ class Game extends Component {
                         }).catch(err => {
                             console.log(err)
                         });
-
-                        
-                        
-
-                        
-                    
-                    
-
-                    // }else{
 
                     }
 
@@ -506,6 +578,19 @@ class Game extends Component {
 
         return (
             <>
+                
+                <div className="modal fade" id="endGame" tabIndex="-1" aria-labelledby="endGame" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-body text-center">
+                                <p style={{ fontSize : 2 + 'rem', fontWeight : 900 }}>GAME HAS ALREADY ENDED</p>
+                                (<a href="/admin-dashboard">return home</a>)
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
                 <div className="modal fade" id="setWinningPattern" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
@@ -745,6 +830,7 @@ class Game extends Component {
 
                     </div>
 
+                    <button type="button" id="triggerEndGame" className="d-none" data-toggle="modal" data-target="#endGame"></button>
                 </div>
             </>
         );

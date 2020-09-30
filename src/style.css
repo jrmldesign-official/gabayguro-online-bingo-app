@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500;900&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f4f4f4;
+}
+
+#player-nav {
+    background: #0f8787;
+}
+
+#admin-nav {
+    background: #100827;
+}
+
+#player-nav .navbar-brand, #admin-nav .navbar-brand{
+    font-weight: 900;
+}
+
+.card {
+    border: 0;
+}
+
+.panel-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #0f8787;
+}
+
+.btn-primary {
+    background: #54aceb;
+}

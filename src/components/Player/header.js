@@ -52,20 +52,20 @@ class header extends Component {
 
         return (
             <div>
-                <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                    <a className="navbar-brand" href="/">GabayGuro | Online Bingo</a>
+                <nav id="player-nav" className="navbar navbar-expand-lg">
+                    <a className="navbar-brand text-white" href="/">GabayGuro | Online Bingo</a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNavDropdown">
-                        <ul className="navbar-nav ml-auto">
+                        <ul className="navbar-nav ml-auto ">
                         <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="/" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a className="nav-link dropdown-toggle text-white" href="/" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Welcome {this.state.name}
                             </a>
                             <div className="dropdown-menu">
                                 <a href="/" className="dropdown-item" onClick={handleClick}>
-                                    Click me
+                                    Log out
                                 </a>
                             </div>
                         </li>
