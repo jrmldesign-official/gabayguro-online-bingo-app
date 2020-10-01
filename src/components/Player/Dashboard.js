@@ -25,8 +25,13 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     let result = await api.post(`Binggo/fetch_all_binggo_events`)
-    this.setState({listevents: result.data.payload})
-    console.log(result.data)
+    if(result.data.status === "SUCCESS"){
+      this.setState({listevents: result.data.payload})
+    }else{
+      document.getElementById("btnJoin").classList.add("d-none")
+      document.getElementById("eventsHelper").classList.remove("d-none")
+    }
+    
   }
 
   getRoomId(event) {
@@ -55,7 +60,7 @@ class Dashboard extends Component {
             <div className="col-xl-8">
               <div className="card rounded-0 shadow-sm">
                 <div className="card-body">
-                  <p class="mb-5 panel-title float-right">DASHBOARD</p>
+                  <p className="mb-5 panel-title float-right">DASHBOARD</p>
                 </div>
               </div>
             </div>
@@ -64,7 +69,8 @@ class Dashboard extends Component {
                 <div className="col-xl-12">
                   <div className="card rounded-0 shadow-sm">
                     <div className="card-body">
-                      <p class="mb-3 panel-title float-right">BINGO EVENTS</p>
+                      <p className="mb-3 panel-title float-right">BINGO EVENTS</p>
+                      <span className="clearfix"></span>
                       <form onSubmit={this.handleSubmit}>
 
                         {
@@ -81,7 +87,8 @@ class Dashboard extends Component {
                           )
                         }
 
-                        <button type="submit" className="btn btn-primary btn-block">Join</button>
+                        <h3 id="eventsHelper" class="text-center d-none">No Events Posted Yet</h3>
+                        <button type="submit" id="btnJoin" className="btn btn-primary btn-block">Join</button>
 
                       </form>
 
@@ -92,7 +99,7 @@ class Dashboard extends Component {
                 <div className="col-xl-12 mt-3">
                   <div className="card rounded-0 shadow-sm">
                     <div className="card-body">
-                      <p class="mb-3 panel-title float-right">Recent Activities</p>
+                      <p className="mb-3 panel-title float-right">Recent Activities</p>
                     </div>
                   </div>
                 </div>

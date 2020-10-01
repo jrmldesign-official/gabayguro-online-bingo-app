@@ -145,7 +145,7 @@ class Game extends Component {
                 this.setState({ gamePhase:game_played })
 
                 if(parseInt(game_remaining) === 0){
-                    alert("EVENT FINISHED")
+                    document.getElementById("triggerEndGame").click()
                 }
 
                 API.post(`Binggo/fetch_draw_logs`, {
@@ -583,6 +583,20 @@ class Game extends Component {
 
         return (
             <>
+
+                <div className="modal fade" id="endGame" tabIndex="-1" aria-labelledby="endGame" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-body text-center">
+                                <p style={{ fontSize : 2 + 'rem', fontWeight : 900 }}>GAME HAS ALREADY ENDED</p>
+                                (<a href="/admin-dashboard">return home</a>)
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <div className="modal fade" id="showWinners" tabIndex="-1" aria-labelledby="endGame" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
@@ -840,6 +854,7 @@ class Game extends Component {
                     </div>
                 </div>
             </div>
+            <button type="button" id="triggerEndGame" className="d-none" data-toggle="modal" data-target="#endGame"></button>
         </>
         );
     }
