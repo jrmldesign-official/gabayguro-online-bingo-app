@@ -61,7 +61,6 @@ class Dashboard extends Component {
             </div>
             <div className="col-xl-4">
               <div className="row">
-                {/* section:start */}
                 <div className="col-xl-12">
                   <div className="card rounded-0 shadow-sm">
                     <div className="card-body">

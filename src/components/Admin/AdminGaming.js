@@ -39,25 +39,47 @@ class Game extends Component {
         });
 
         socket.on('broadcaseWinner', message => {
-            API.post(`Binggo/end_game`, {
-                binggo_event_id: room
-            }).then(res => {
-                if(res.data.status === "SUCCESS"){
-                    socket.emit('endGame', "restart");
-                    window.location.reload()
-                }
-            }).catch(err => {
-                console.log(err)
-            });
+            console.log(message)
+            if(message.text.status === 'true' || message.status === true){
+                API.post(`Binggo/end_game`, {
+                    binggo_event_id: room
+                }).then(res => {
+
+                    if(this.state.gamePhase === 0 || this.state.gamePhase === '0'){
+                        var gameCount = 1
+                    }else{
+                        var gameCount = this.state.gamePhase
+                    }
+
+                    API.post(`Binggo/save_winner`, {
+                        binggo_event_id: room,
+                        user_id: user_id,
+                        binggo_game_no: gameCount
+                    }).then(res => {
+                        if(res.data.status === "SUCCESS"){
+                            socket.emit('endGame', "restart");
+                            window.location.reload()
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    });
+                }).catch(err => {
+                    console.log(err)
+                });
+            }else{
+
+            }
+
+            
         });
 
         API.post(`Binggo/fetch_binggo_event_by_id`, {
             binggo_event_id: room
         }).then(res => {
             if(res.data.status === "SUCCESS"){
-
-                var total_game = parseInt(res.data.payload[0].binggo_max_game_total) + 1
-                var game_remaining = res.data.payload[0].binggo_max_game
+                console.warn(res.data)
+                var total_game = parseInt(res.data.payload.binggo_max_game_total) + 1
+                var game_remaining = res.data.payload.binggo_max_game
 
                 var game_played = total_game - game_remaining
 
@@ -84,20 +106,20 @@ class Game extends Component {
 
                     if(res.data.status === "SUCCESS"){
 
-                        var total_game = parseInt(res.data.payload[0].binggo_max_game_total) + 1
-                        var game_remaining = res.data.payload[0].binggo_max_game
-                        var gameStatus = res.data.payload[0].binggo_status
+                        var total_game = parseInt(res.data.payload.binggo_max_game_total) + 1
+                        var game_remaining = res.data.payload.binggo_max_game
+                        var gameStatus = res.data.payload.binggo_status
                         var game_played = total_game - game_remaining
 
                         this.setState({ gamePhase:game_played })
 
                         console.log("PHASE: "+ this.state.gamePhase)
 
-                        if(res.data.payload[0].binggo_status === "1"){
+                        if(res.data.payload.binggo_status === "1"){
                             document.querySelector(".stepTwo").classList.remove("disabled")
                             document.querySelector(".stepTwo p").classList.add("font-weight-bolder") 
                             document.querySelector(".btnStartBingo").classList.remove("d-none")
-                        }else if(res.data.payload[0].binggo_status === "2"){
+                        }else if(res.data.payload.binggo_status === "2"){
                             document.querySelector(".stepThree").classList.remove("disabled")
                             document.querySelector(".stepThree p").classList.add("font-weight-bolder") 
                             document.querySelector(".btnDrawNumber").classList.remove("d-none")
@@ -222,36 +244,36 @@ class Game extends Component {
     }
 
     Setppattern = (event) => {
-        event.target.classList.toggle("marked");
+        event.target.classList.toggle("markedPattern");
         console.log(event.target.getAttribute("data-cell"))
     }
 
     GetPattern = (e) => {
 
-        let B1 = document.querySelector("#pattern-B1").classList.contains("marked")
-        let I1 = document.querySelector("#pattern-I1").classList.contains("marked")
-        let N1 = document.querySelector("#pattern-N1").classList.contains("marked")
-        let G1 = document.querySelector("#pattern-G1").classList.contains("marked")
-        let O1 = document.querySelector("#pattern-O1").classList.contains("marked")
-        let B2 = document.querySelector("#pattern-B2").classList.contains("marked")
-        let I2 = document.querySelector("#pattern-I2").classList.contains("marked")
-        let N2 = document.querySelector("#pattern-N2").classList.contains("marked")
-        let G2 = document.querySelector("#pattern-G2").classList.contains("marked")
-        let O2 = document.querySelector("#pattern-O2").classList.contains("marked")
-        let B3 = document.querySelector("#pattern-B3").classList.contains("marked")
-        let I3 = document.querySelector("#pattern-I3").classList.contains("marked")
-        let G3 = document.querySelector("#pattern-G3").classList.contains("marked")
-        let O3 = document.querySelector("#pattern-O3").classList.contains("marked")
-        let B4 = document.querySelector("#pattern-B4").classList.contains("marked")
-        let I4 = document.querySelector("#pattern-I4").classList.contains("marked")
-        let N4 = document.querySelector("#pattern-N4").classList.contains("marked")
-        let G4 = document.querySelector("#pattern-G4").classList.contains("marked")
-        let O4 = document.querySelector("#pattern-O4").classList.contains("marked")
-        let B5 = document.querySelector("#pattern-B5").classList.contains("marked")
-        let I5 = document.querySelector("#pattern-I5").classList.contains("marked")
-        let N5 = document.querySelector("#pattern-N5").classList.contains("marked")
-        let G5 = document.querySelector("#pattern-G5").classList.contains("marked")
-        let O5 = document.querySelector("#pattern-O5").classList.contains("marked")
+        let B1 = document.querySelector("#pattern-B1").classList.contains("markedPattern")
+        let I1 = document.querySelector("#pattern-I1").classList.contains("markedPattern")
+        let N1 = document.querySelector("#pattern-N1").classList.contains("markedPattern")
+        let G1 = document.querySelector("#pattern-G1").classList.contains("markedPattern")
+        let O1 = document.querySelector("#pattern-O1").classList.contains("markedPattern")
+        let B2 = document.querySelector("#pattern-B2").classList.contains("markedPattern")
+        let I2 = document.querySelector("#pattern-I2").classList.contains("markedPattern")
+        let N2 = document.querySelector("#pattern-N2").classList.contains("markedPattern")
+        let G2 = document.querySelector("#pattern-G2").classList.contains("markedPattern")
+        let O2 = document.querySelector("#pattern-O2").classList.contains("markedPattern")
+        let B3 = document.querySelector("#pattern-B3").classList.contains("markedPattern")
+        let I3 = document.querySelector("#pattern-I3").classList.contains("markedPattern")
+        let G3 = document.querySelector("#pattern-G3").classList.contains("markedPattern")
+        let O3 = document.querySelector("#pattern-O3").classList.contains("markedPattern")
+        let B4 = document.querySelector("#pattern-B4").classList.contains("markedPattern")
+        let I4 = document.querySelector("#pattern-I4").classList.contains("markedPattern")
+        let N4 = document.querySelector("#pattern-N4").classList.contains("markedPattern")
+        let G4 = document.querySelector("#pattern-G4").classList.contains("markedPattern")
+        let O4 = document.querySelector("#pattern-O4").classList.contains("markedPattern")
+        let B5 = document.querySelector("#pattern-B5").classList.contains("markedPattern")
+        let I5 = document.querySelector("#pattern-I5").classList.contains("markedPattern")
+        let N5 = document.querySelector("#pattern-N5").classList.contains("markedPattern")
+        let G5 = document.querySelector("#pattern-G5").classList.contains("markedPattern")
+        let O5 = document.querySelector("#pattern-O5").classList.contains("markedPattern")
 
         if(B1 === true) { var B1_flag = 1 } else { var B1_flag = 0 }
         if(I1 === true) { var I1_flag = 1 } else { var I1_flag = 0 }
@@ -607,7 +629,7 @@ class Game extends Component {
 
                             <div className="modal-body text-center">
                             
-                                <table id="winning-pattern-card" className="text-center mx-auto" data-set="false">
+                                <table id="winning-pattern-card" className="table text-center mx-auto" data-set="false">
                                     <tbody>
                                         <tr>
                                             <td className="pattern" id="pattern-B1" onClick={this.Setppattern} data-cell="B1"></td>
@@ -626,7 +648,7 @@ class Game extends Component {
                                         <tr>
                                             <td className="pattern" id="pattern-B3" onClick={this.Setppattern} data-cell="B3"></td>
                                             <td className="pattern" id="pattern-I3" onClick={this.Setppattern} data-cell="I3"></td>
-                                            <td className="pattern marked" data-cell="N3">FREE</td>
+                                            <td className="pattern markedPattern" data-cell="N3">FREE</td>
                                             <td className="pattern" id="pattern-G3" onClick={this.Setppattern} data-cell="G3"></td>
                                             <td className="pattern" id="pattern-O3" onClick={this.Setppattern} data-cell="O3"></td>
                                         </tr>
@@ -656,7 +678,7 @@ class Game extends Component {
                 </div>
 
                 <Header />
-                <div id="bingo-body" className="container-fluid bg-white pt-0">
+                <div id="bingo-body" className="container-fluid pt-0">
 
                     <div className="row pt-3">
 

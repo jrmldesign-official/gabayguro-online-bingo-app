@@ -30,3 +30,61 @@ body {
 .btn-primary {
     background: #54aceb;
 }
+
+#login-body {
+    height: 100vh;
+    background: #0f8787;
+}
+
+#gg-login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 100%;
+    border-top: unset !important;
+    border-radius: 1rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+}
+
+#gg-login-container .title, .gg-text {
+    color: #58ceb5;
+}
+
+#gg-login-container .gg-bg {
+    background: #2bbc9b;
+}
+
+#gg-login-container .title{
+    font-weight: 900;
+    font-size: 3rem;
+}
+
+.custorm-form-login {
+    background: #e6ebef;
+    border: 0;
+    border-top-right-radius: 0px;
+}
+
+#bingo-body .row{
+    padding-top: 2rem;
+    height: 80vh;
+}
+
+.marked {
+    background: #d1d1d1;
+}
+
+.markedPattern {
+    background: #d1d1d1 !important;
+}
+
+#winning-pattern-card tr td {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 0;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+}

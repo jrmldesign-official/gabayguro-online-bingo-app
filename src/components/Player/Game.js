@@ -7,6 +7,7 @@ var socket = io.connect('https://gabayguro-bingo-server.herokuapp.com/')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
+var patternObj = []
 
 const API = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
@@ -24,7 +25,8 @@ class Game extends Component {
         prizes: [],
         lop: [],
         CurrentDraw: '',
-        IsCardExist: ''
+        IsCardExist: '',
+        eventWinners: []
     };
 
     constructor() {
@@ -39,8 +41,6 @@ class Game extends Component {
         socket.emit('joinRoom', { username, room });
 
         socket.on('roomUsers', ({ room, users }) => {
-            console.log(room)
-            console.log(users)
             this.setState({ lop: users })
         });
 
@@ -68,29 +68,38 @@ class Game extends Component {
             }else{
 
                 for(let i = 0; message.text.length > i; i++){
-                    var element = document.querySelector("#js-card-"+message.text[i].split("-")[1]);
-    
-                    if(element === null || element === 'null'){
-                        console.log("Does not exist")
+
+                    let ifElementExist = document.querySelectorAll("#js-card-"+message.text[i].split("-")[1]).length
+
+                    if(ifElementExist === 0){
                     }else{
-                        element.classList.add("bg-success")
-                        element.setAttribute("data-pattern", true)
-    
-                        // alert(document.querySelectorAll(".js-card-cell[data-pattern='false']").length)
-    
-                        if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
-                            // alert("BINGGO MADERFAKKERS")
-                            document.getElementById("bingo").classList.remove("d-none")
+
+                        let ifElementWithAttrExist = document.querySelector("#js-card-"+message.text[i].split("-")[1]).hasAttribute("data-pattern")
+
+                        if(ifElementWithAttrExist === true || ifElementWithAttrExist === 'true'){
+                            document.querySelector("#js-card-"+message.text[i].split("-")[1]).classList.add("bg-success")
+                            document.querySelector("#js-card-"+message.text[i].split("-")[1]).setAttribute("data-pattern", true)
+
+                            if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                document.getElementById("bingo").classList.remove("d-none")
+                            }
+
                         }else{
-                            
+                            document.querySelector("#js-card-"+message.text[i].split("-")[1]).classList.add("bg-success")
+
+                            if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                document.getElementById("bingo").classList.remove("d-none")
+                            }
                         }
-    
+
+                        
+
+                    
+
                     }
                 }
 
             }
-
-            console.log(message)
         });
 
         socket.on('eventStartTrigger', message => {
@@ -120,16 +129,19 @@ class Game extends Component {
         this.getWinningPattern();
         this.getUserDetails();
 
+
+        console.log("--trigger fetch bingo event--")
         API.post(`Binggo/fetch_binggo_event_by_id`, {
             binggo_event_id: room
         }).then(res => {
+
             if(res.data.status === "SUCCESS"){
 
-                var total_game = parseInt(res.data.payload[0].binggo_max_game_total) + 1
-                var game_remaining = res.data.payload[0].binggo_max_game
-
+                var total_game = parseInt(res.data.payload.binggo_max_game_total) + 1
+                var game_remaining = res.data.payload.binggo_max_game
                 var game_played = total_game - game_remaining
 
+                this.setState({ eventWinners: res.data.payload.winners })
                 this.setState({ gamePhase:game_played })
 
                 if(parseInt(game_remaining) === 0){
@@ -142,28 +154,30 @@ class Game extends Component {
                 }).then(res => {
                     if(res.data.status === "SUCCESS"){
 
-                        console.log("FETCH DRAW LOG")
-
                         for(let i = 0; res.data.payload.length > i; i++){
+                            
+                            let ifElementExist = document.querySelectorAll("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).length
 
-                            console.log()
-
-                            var element = document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]);
-            
-                            if(element === null || element === 'null'){
-                                console.log("Does not exist")
+                            if(ifElementExist === 0){
                             }else{
-                                element.classList.remove("marked")
-                                element.classList.add("bg-success")
-                                element.setAttribute("data-pattern", true)
-                                document.querySelector(".N3").classList.remove("marked")
-            
-                                if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
-                                    document.getElementById("bingo").classList.remove("d-none")
+
+                                let ifElementWithAttrExist = document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).hasAttribute("data-pattern")
+
+                                if(ifElementWithAttrExist === true || ifElementWithAttrExist === 'true'){
+                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).setAttribute("data-pattern", true)
+
+                                    if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                        document.getElementById("bingo").classList.remove("d-none")
+                                    }
+
                                 }else{
-                                    
+                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+
+                                    if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                        document.getElementById("bingo").classList.remove("d-none")
+                                    }
                                 }
-            
                             }
                         }
 
@@ -210,23 +224,29 @@ class Game extends Component {
             if(res.data.status === "SUCCESS"){
 
                 for(let i = 0; res.data.payload.length > i; i++){
-                    var element = document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]);
-
-                    if(element === null || element === 'null'){
-                        console.log("Does not exist")
-                    }else{
-                        element.classList.add("bg-success")
-                        element.setAttribute("data-pattern", true)
-
-                        // alert(document.querySelectorAll(".js-card-cell[data-pattern='false']").length)
-
-                        if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
-                            // alert("BINGGO MADERFAKKERS")
-                            document.getElementById("bingo").classList.remove("d-none")
-                        }else{
                             
-                        }
+                    let ifElementExist = document.querySelectorAll("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).length
 
+                    if(ifElementExist === 0){
+                    }else{
+
+                        let ifElementWithAttrExist = document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).hasAttribute("data-pattern")
+
+                        if(ifElementWithAttrExist === true || ifElementWithAttrExist === 'true'){
+                            document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+                            document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).setAttribute("data-pattern", true)
+
+                            if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                document.getElementById("bingo").classList.remove("d-none")
+                            }
+
+                        }else{
+                            document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+
+                            if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                document.getElementById("bingo").classList.remove("d-none")
+                            }
+                        }
                     }
                 }
 
@@ -281,8 +301,6 @@ class Game extends Component {
                 if(res.data.payload[0].O5 === "1") { document.querySelector(".O5").setAttribute("data-pattern", false); document.querySelector(".O5").classList.add("marked")}
 
             }
-            console.log(res);
-            console.log(res.data);
 
         }).catch(err => {
             console.log(err)
@@ -300,28 +318,17 @@ class Game extends Component {
         .then(res => {
 
             if(res.data.status === "SUCCESS"){
-
-                console.log("THE RESULT")
-                console.log(res.data)
                 
                 if(res.data.payload[0].isCardset === "0") { 
 
-                    alert("NOT EXIST")
+                    alert("Please select your card")
                     document.getElementById("shuffle").click()
-                    // this.populateCard()
                     
                 } else { 
-                    
-                    alert("EXIST")
 
                     document.getElementById("bingo-card").setAttribute("data-set", true)
                     document.getElementById("shuffle").remove()
                     document.getElementById("select_card").remove()
-
-                    console.log("ANG BINGO CARD KO")
-                    console.log(res.data)
-
-                    
                     document.getElementById("B1").innerHTML = res.data.payload[0].B1
                     document.getElementById("B1").id = 'js-card-'+res.data.payload[0].B1
                     document.getElementById("B2").innerHTML = res.data.payload[0].B2
@@ -545,9 +552,20 @@ class Game extends Component {
         })
         
     }
-
+    
     Bingo = () => {
-        socket.emit('playerBingo', true);
+
+        // for(let i = 0; document.querySelectorAll(".js-card-cell[data-pattern='true']").length > i; i++){
+        //     patternObj.push(document.querySelectorAll(".js-card-cell[data-pattern='true']")[i])
+        //     if(document.querySelectorAll(".js-card-cell[data-pattern='true']").length === i+1){
+                
+        //     }
+        // }
+        socket.emit('playerBingo', {
+            playerID: user_id,
+            status: 'true',
+            pattern: '--pause--'
+        });
     }
 
 
@@ -565,6 +583,30 @@ class Game extends Component {
 
         return (
             <>
+                <div className="modal fade" id="showWinners" tabIndex="-1" aria-labelledby="endGame" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-body text-center">
+                            <h4 className="mb-0">List of Winners</h4>
+                                {this.state.eventWinners.length > 0 ? (
+                                    <ul className="list-group list-group-flush" style={{ maxHeight: 50+'vh', overflowX: 'auto' }}>
+                                        {this.state.eventWinners.map((list, index) => 
+                                            <li className="list-group-item" key={list.bew_id}>
+                                                <p className="mb-0"><b>{index+1}:</b> {list.user_fullname}</p>
+                                            </li>
+                                        )}
+                                    </ul>
+                                        
+                                    ):(
+                                        <span></span>
+                                    )
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             <Header />
             <div className="container-fluid mt-3">
                 <div className="row">
@@ -572,33 +614,32 @@ class Game extends Component {
 
                         <div className="row">
                             <div className="col-xl-12">
-                                <div className="card">
+                                <div className="card pb-0">
                                     <div className="card-body">
-                                        <p class="mb-5 panel-title float-right">CURRENT DRAW</p>
-                                        <p id="current_draw">{this.state.CurrentDraw ? this.state.CurrentDraw : 0}</p>
-                                        <small className="text-muted">Show Winning Prices</small> 
+                                        <p className="mb-3 panel-title float-right">CURRENT DRAW</p>
+                                        <p id="current_draw"><strong>{this.state.CurrentDraw ? this.state.CurrentDraw : 0}</strong></p>
+                                        <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showPrices">Show Prices</button> | <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showWinners">Show Winners</button> 
                                     </div>
                                 </div>
                             </div>
                             <div className="col-xl-12 mt-3">
                                 <div className="card">
                                     <div className="card-body">
-                                        <p class="mb-3 panel-title float-right">PARTICIPANTS ({this.state.lop.length})</p>
+                                        <p className="mb-3 panel-title float-right">PARTICIPANTS ({this.state.lop.length})</p>
                                         <span className="clearfix"></span>
                                         
                                         {this.state.lop.length > 0 ? (
                                             <>
                                                 {
                                                 this.state.lop.map((data, index) => (
-                                                    <div className="card border-0 rounded-0 shadow-sm mb-1 p-2 pl-3">
+                                                    <div key={index} className="card border-0 rounded-0 shadow-sm mb-1 p-2 pl-3">
                                                         <HighlightName key={index} username={data.username} />
                                                     </div>
                                                     
                                                 ))}
                                             </>
                                         ):(
-                                            <div>
-                                            </div>
+                                            <p>-- No Winners Yet --</p>
                                         )}
 
                                     </div>

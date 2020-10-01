@@ -102,7 +102,8 @@ export default class Login extends React.Component {
                     </div>
                     <div className="col-12">
                       <div className="form-group">
-                      <label htmlFor="exampleInputEmail1" className="small gg-text float-left">Email</label> <a href="#!" className="small float-right">Forgot password?</a>
+                      <label htmlFor="exampleInputEmail1" className="small gg-text float-left">Email</label> 
+                      {/* <a href="#!" className="small float-right">Forgot password?</a> */}
                       <input type="text" name="email" className="form-control custorm-form-login" id="gg-password" value={this.state.email} onChange={this.handleEmailChange}/>
                       <small id="emailHelp" className="form-text text-muted d-none"></small>
                       </div>
