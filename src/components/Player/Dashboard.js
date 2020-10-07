@@ -87,7 +87,7 @@ class Dashboard extends Component {
                           )
                         }
 
-                        <h3 id="eventsHelper" class="text-center d-none">No Events Posted Yet</h3>
+                        <h3 id="eventsHelper" className="text-center d-none">No Events Posted Yet</h3>
                         <button type="submit" id="btnJoin" className="btn btn-primary btn-block">Join</button>
 
                       </form>

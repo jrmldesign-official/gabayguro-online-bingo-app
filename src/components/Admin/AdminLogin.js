@@ -36,14 +36,14 @@ export default class Login extends React.Component {
       email: this.state.email
     };
 
-    axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}`)
+    axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}&contact_no=`)
       .then(res => {
-        if(res.data.status === "SUCCESS"){
-          if(res.data.payload.user_type === 'admin'){
-            localStorage.setItem("user_id", res.data.payload.user_id)
+        if(res.data.status === "Success" || res.data.status === "SUCCESS"){
+          if(res.data.payload[0].user_type === 'admin'){
+            localStorage.setItem("user_id", res.data.payload[0].user_id)
             window.location.href = "/admin-dashboard"
           }else{
-            alert("hindi siya admin")
+            // alert("hindi siya admin")
           }
         }
         console.log(res);

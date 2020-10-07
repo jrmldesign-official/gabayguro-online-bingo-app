@@ -22,6 +22,7 @@ class Dashboard extends Component {
     eventMaxWinners: '',
     eventDate: '',
     eventPrices: '',
+    eventList: []
   }
 
   constructor() {
@@ -29,6 +30,7 @@ class Dashboard extends Component {
     
     this.getRoomId = this.getRoomId.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    
   }
   
 
@@ -70,7 +72,6 @@ class Dashboard extends Component {
     });
   }
 
-
   eventTitle = (e) => {
     this.setState({eventTitle: e.target.value})
   }
@@ -88,6 +89,18 @@ class Dashboard extends Component {
   }
 
   createNewEvent = () => {
+
+    let prizeObj = []
+
+    for(let a = 0; a < this.state.eventPrices.split(",").length; a++){
+      let item = this.state.eventPrices.split(",")[a].trimStart()
+      var rowData = {
+        prize_desc: item,
+        prize_qty: 0
+      }
+      prizeObj.push(rowData)
+    }
+
     API.post(`Binggo/create_binggo_event`, {
       binggo_title: this.state.eventTitle,
       binggo_desc: this.state.eventDesc,
@@ -95,7 +108,7 @@ class Dashboard extends Component {
       binggo_max_game: this.state.eventMaxWinners,
       created_by: localStorage.user_id,
       binggo_event_starts: this.state.eventDate,
-      prizes: this.state.eventPrices.split(",")
+      prizes: prizeObj
     }).then(res => {
       document.querySelector("#exampleModal button.close").click()
       this.getEventList()
@@ -219,7 +232,7 @@ class Dashboard extends Component {
 
                 <div className="card rounded-0 shadow-sm">
                   <div className="card-body">
-                    <p class="mb-2 panel-title">Total Events</p>
+                    <p className="mb-2 panel-title">Total Events</p>
                     <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-bar-chart float-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                       <path fillRule="evenodd" d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5h-2v12h2V2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
                     </svg>
@@ -273,7 +286,7 @@ class Dashboard extends Component {
                 <div className="col-xl-12">
                   <div className="card rounded-0 shadow-sm">
                     <div className="card-body">
-                      <p class="mb-3 panel-title float-right">ACTIVITY LOGS</p>
+                      <p className="mb-3 panel-title float-right">ACTIVITY LOGS</p>
                       <span className="clearfix"></span>
                       {this.state.listevents.length > 0 ? (
                         <ul className="list-group list-group-flush" style={{ maxHeight: 50+'vh', overflowX: 'auto' }}>

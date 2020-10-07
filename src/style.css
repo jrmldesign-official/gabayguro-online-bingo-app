@@ -33,14 +33,14 @@ body {
 
 #login-body {
     height: 100vh;
-    background: #0f8787;
+    background-image: linear-gradient(135deg, #0f7563 0%, rgb(43 188 155) 100%) !important;
 }
 
 #gg-login-container {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -50%);
     width: 100%;
     border-top: unset !important;
     border-radius: 1rem !important;

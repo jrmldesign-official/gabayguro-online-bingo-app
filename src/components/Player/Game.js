@@ -53,6 +53,7 @@ class Game extends Component {
             }else{
 
                 this.setState({ CurrentDraw: message.text })
+                document.getElementById("js-caller-"+message.text).classList.add("marked")
 
             }
             
@@ -68,7 +69,7 @@ class Game extends Component {
             }else{
 
                 for(let i = 0; message.text.length > i; i++){
-
+                    document.getElementById("js-caller-"+message.text[i]).classList.add("marked")
                     let ifElementExist = document.querySelectorAll("#js-card-"+message.text[i].split("-")[1]).length
 
                     if(ifElementExist === 0){
@@ -146,6 +147,8 @@ class Game extends Component {
 
                 if(parseInt(game_remaining) === 0){
                     document.getElementById("triggerEndGame").click()
+                    document.getElementById("bingo-card-section").remove()
+                    document.getElementById("bingo-table-section").remove()
                 }
 
                 API.post(`Binggo/fetch_draw_logs`, {
@@ -154,43 +157,63 @@ class Game extends Component {
                 }).then(res => {
                     if(res.data.status === "SUCCESS"){
 
-                        for(let i = 0; res.data.payload.length > i; i++){
-                            
-                            let ifElementExist = document.querySelectorAll("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).length
+                        var fetchDraw = res.data.payload
 
-                            if(ifElementExist === 0){
-                            }else{
+                        API.post(`https://binggo-test.dokyumento.asia/index.php/Binggo/select_event`, 
+                        { 
+                            binggo_event_id: localStorage.room_id,
+                            user_id: localStorage.user_id 
+                        })
+                        .then(res => {
 
-                                let ifElementWithAttrExist = document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).hasAttribute("data-pattern")
-
-                                if(ifElementWithAttrExist === true || ifElementWithAttrExist === 'true'){
-                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
-                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).setAttribute("data-pattern", true)
-
-                                    if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
-                                        document.getElementById("bingo").classList.remove("d-none")
-                                    }
-
+                            if(res.data.status === "SUCCESS"){
+                
+                                if(res.data.payload[0].isCardset === "0" && res.data.payload.length > 0) { 
+                                    document.getElementById("bingo-card").setAttribute("data-set", false)
                                 }else{
-                                    document.querySelector("#js-card-"+res.data.payload[i].binggo_draw.split("-")[1]).classList.add("bg-success")
-
-                                    if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
-                                        document.getElementById("bingo").classList.remove("d-none")
+                                    document.getElementById("bingo-card").setAttribute("data-set", true)
+                                    
+                                    for(let i = 0; fetchDraw.length > i; i++){
+                                        document.getElementById("js-caller-"+fetchDraw[i].binggo_draw).classList.add("marked")
+                                        
+                                        let ifElementExist = document.querySelectorAll("#js-card-"+fetchDraw[i].binggo_draw.split("-")[1]).length
+            
+                                        if(ifElementExist === 0){
+                                        }else{
+                                            
+                                            let ifElementWithAttrExist = document.querySelector("#js-card-"+fetchDraw[i].binggo_draw.split("-")[1]).hasAttribute("data-pattern")
+            
+                                            if(ifElementWithAttrExist === true || ifElementWithAttrExist === 'true'){
+                                                document.querySelector("#js-card-"+fetchDraw[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+                                                document.querySelector("#js-card-"+fetchDraw[i].binggo_draw.split("-")[1]).setAttribute("data-pattern", true)
+            
+                                                if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                                    document.getElementById("bingo").classList.remove("d-none")
+                                                }
+            
+                                            }else{
+                                                document.querySelector("#js-card-"+fetchDraw[i].binggo_draw.split("-")[1]).classList.add("bg-success")
+            
+                                                if(document.querySelectorAll(".js-card-cell[data-pattern='false']").length === "0" || document.querySelectorAll(".js-card-cell[data-pattern='false']").length === 0){
+                                                    document.getElementById("bingo").classList.remove("d-none")
+                                                }
+                                            }
+                                        }
                                     }
+
                                 }
+
                             }
-                        }
+
+                        }).catch(err => {
+                            console.log(err)
+                        });
 
                     }
                 }).catch(err => {
                     console.log(err)
                 });
-
-
-
-
                 
-                console.log()
                 console.log("PHASE: "+ this.state.gamePhase)
             }
         }).catch(err => {
@@ -321,9 +344,69 @@ class Game extends Component {
                 
                 if(res.data.payload[0].isCardset === "0") { 
 
-                    alert("Please select your card")
-                    document.getElementById("shuffle").click()
-                    
+                    if(res.data.payload[0].B1 === null){
+                        alert("Please select your card")
+                        document.getElementById("shuffle").click()
+                    }else{
+
+                        document.getElementById("bingo-card").setAttribute("data-set", true)
+                        document.getElementById("B1").innerHTML = res.data.payload[0].B1
+                        document.getElementById("B1").id = 'js-card-'+res.data.payload[0].B1
+                        document.getElementById("B2").innerHTML = res.data.payload[0].B2
+                        document.getElementById("B2").id = 'js-card-'+res.data.payload[0].B2
+                        document.getElementById("B3").innerHTML = res.data.payload[0].B3
+                        document.getElementById("B3").id = 'js-card-'+res.data.payload[0].B3
+                        document.getElementById("B4").innerHTML = res.data.payload[0].B4
+                        document.getElementById("B4").id = 'js-card-'+res.data.payload[0].B4
+                        document.getElementById("B5").innerHTML = res.data.payload[0].B5
+                        document.getElementById("B5").id = 'js-card-'+res.data.payload[0].B5
+
+                        document.getElementById("I1").innerHTML = res.data.payload[0].I1
+                        document.getElementById("I1").id = 'js-card-'+res.data.payload[0].I1
+                        document.getElementById("I2").innerHTML = res.data.payload[0].I2
+                        document.getElementById("I2").id = 'js-card-'+res.data.payload[0].I2
+                        document.getElementById("I3").innerHTML = res.data.payload[0].I3
+                        document.getElementById("I3").id = 'js-card-'+res.data.payload[0].I3
+                        document.getElementById("I4").innerHTML = res.data.payload[0].I4
+                        document.getElementById("I4").id = 'js-card-'+res.data.payload[0].I4
+                        document.getElementById("I5").innerHTML = res.data.payload[0].I5
+                        document.getElementById("I5").id = 'js-card-'+res.data.payload[0].I5
+
+                        document.getElementById("N1").innerHTML = res.data.payload[0].N1
+                        document.getElementById("N1").id = 'js-card-'+res.data.payload[0].N1
+                        document.getElementById("N2").innerHTML = res.data.payload[0].N2
+                        document.getElementById("N2").id = 'js-card-'+res.data.payload[0].N2
+                        document.getElementById("N3").innerHTML = 'FREE'
+                        document.getElementById("N3").id = 'js-card-'+res.data.payload[0].N3
+                        document.getElementById("N4").innerHTML = res.data.payload[0].N4
+                        document.getElementById("N4").id = 'js-card-'+res.data.payload[0].N4
+                        document.getElementById("N5").innerHTML = res.data.payload[0].N5
+                        document.getElementById("N5").id = 'js-card-'+res.data.payload[0].N5
+
+                        document.getElementById("G1").innerHTML = res.data.payload[0].G1
+                        document.getElementById("G1").id = 'js-card-'+res.data.payload[0].G1
+                        document.getElementById("G2").innerHTML = res.data.payload[0].G2
+                        document.getElementById("G2").id = 'js-card-'+res.data.payload[0].G2
+                        document.getElementById("G3").innerHTML = res.data.payload[0].G3
+                        document.getElementById("G3").id = 'js-card-'+res.data.payload[0].G3
+                        document.getElementById("G4").innerHTML = res.data.payload[0].G4
+                        document.getElementById("G4").id = 'js-card-'+res.data.payload[0].G4
+                        document.getElementById("G5").innerHTML = res.data.payload[0].G5
+                        document.getElementById("G5").id = 'js-card-'+res.data.payload[0].G5
+
+                        document.getElementById("O1").innerHTML = res.data.payload[0].O1
+                        document.getElementById("O1").id = 'js-card-'+res.data.payload[0].O1
+                        document.getElementById("O2").innerHTML = res.data.payload[0].O2
+                        document.getElementById("O2").id = 'js-card-'+res.data.payload[0].O2
+                        document.getElementById("O3").innerHTML = res.data.payload[0].O3
+                        document.getElementById("O3").id = 'js-card-'+res.data.payload[0].O3
+                        document.getElementById("O4").innerHTML = res.data.payload[0].O4
+                        document.getElementById("O4").id = 'js-card-'+res.data.payload[0].O4
+                        document.getElementById("O5").innerHTML = res.data.payload[0].O5
+                        document.getElementById("O5").id = 'js-card-'+res.data.payload[0].O5
+
+                    }
+
                 } else { 
 
                     document.getElementById("bingo-card").setAttribute("data-set", true)
@@ -590,7 +673,7 @@ class Game extends Component {
 
                             <div className="modal-body text-center">
                                 <p style={{ fontSize : 2 + 'rem', fontWeight : 900 }}>GAME HAS ALREADY ENDED</p>
-                                (<a href="/admin-dashboard">return home</a>)
+                                (<a href="/">return home</a>)
                             </div>
 
                         </div>
@@ -622,7 +705,7 @@ class Game extends Component {
                     </div>
                 </div>
             <Header />
-            <div className="container-fluid mt-3">
+            <div className="container-fluid my-4 mb-4">
                 <div className="row">
                     <div className="col-xl-4">
 
@@ -662,12 +745,13 @@ class Game extends Component {
                         </div>
 
                     </div>
-                    <div className="col-xl-4">
+                    <div id="bingo-card-section" className="col-xl-4">
 
                         <div className="card mx-auto">
-                            
                             <div className="card-body text-center">
-                                <h3>{localStorage.name}</h3>
+                                <h3 className="text-center m-0 p-0" style={{ fontWeight: 900 }}>Macbook Pro</h3>
+                                <p className="small text-center m-0 p-0 mb-3">prize to win</p>
+                                <h3 className="d-none">{localStorage.name}</h3>
 
                                 <table id="bingo-card" className="table table-borderless mx-auto" data-set="false">
                                     <thead>
@@ -728,7 +812,7 @@ class Game extends Component {
 
                         </div>
                     </div>
-                    <div className="col-xl-4 bg-white">
+                    <div id="bingo-table-section" className="col-xl-4 bg-white">
                         
                         <div className="card mx-auto">
                             <div className="card-body text-center" style={{ maxHeight: 85 + 'vh', overflowX: 'auto'}}>

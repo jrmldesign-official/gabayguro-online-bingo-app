@@ -27,8 +27,16 @@ class Game extends Component {
         totalDraw: 0,
         BallCount: 75,
         maxGame: [],
-        gamePhase: ''
+        gamePhase: '',
+        winningPrizes: [],
+        prizeId: ''
     };
+
+    constructor() {
+        super();
+        
+        this.getPrizeId = this.getPrizeId.bind(this);
+    }
 
     componentDidMount() {   
 
@@ -53,7 +61,7 @@ class Game extends Component {
 
                     API.post(`Binggo/save_winner`, {
                         binggo_event_id: room,
-                        user_id: user_id,
+                        user_id: message.text.playerID,
                         binggo_game_no: gameCount
                     }).then(res => {
                         if(res.data.status === "SUCCESS"){
@@ -84,6 +92,7 @@ class Game extends Component {
                 var game_played = total_game - game_remaining
 
                 this.setState({ gamePhase:game_played })
+                this.setState({ winningPrizes: res.data.payload.prizes})
 
                 if(parseInt(game_remaining) === 0){
                     document.getElementById("triggerEndGame").click()
@@ -238,6 +247,11 @@ class Game extends Component {
 
     }
 
+    getPrizeId(event) {
+        console.log(event.target.value)
+        this.setState({prizeId: event.target.value});
+    }
+
     viewPattern = () => {
         document.querySelector("#setWinningPattern .modal-title").innerHTML = "View Winning Pattern"
         document.getElementById("GetPattern").classList.add("d-none")
@@ -306,6 +320,7 @@ class Game extends Component {
 
         API.post(`Binggo/set_binggo_wining_pattern`, {
             "binggo_event_id": room,
+            "prize_id": this.state.prizeId,
             "created_by": user_id,
             "B1": B1_flag,
             "B2": B2_flag,
@@ -628,6 +643,29 @@ class Game extends Component {
                             </div>
 
                             <div className="modal-body text-center">
+
+                            <div className="input-group mb-3">
+                            <div className="input-group-prepend">
+                                <label className="input-group-text" for="inputGroupSelect01">Tag Winning Prize</label>
+                            </div>
+                            {this.state.winningPrizes.length > 0 ? (
+                            <select className="custom-select" value={this.state.prize_id} onChange={this.getPrizeId}>
+                                {this.state.winningPrizes.map((list, index) => 
+                                <option key={index} value={list.prize_id}>
+                                    {list.prize_desc}
+                                </option>
+                                )}
+                            </select>
+                                    
+                                ):(
+                                    <span></span>
+                                )
+                            }
+                            </div>
+
+
+                            
+
                             
                                 <table id="winning-pattern-card" className="table text-center mx-auto" data-set="false">
                                     <tbody>
