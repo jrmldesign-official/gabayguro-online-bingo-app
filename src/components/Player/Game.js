@@ -26,7 +26,8 @@ class Game extends Component {
         lop: [],
         CurrentDraw: '',
         IsCardExist: '',
-        eventWinners: []
+        eventWinners: [],
+        prizeToWin: ''
     };
 
     constructor() {
@@ -54,6 +55,15 @@ class Game extends Component {
 
                 this.setState({ CurrentDraw: message.text })
                 document.getElementById("js-caller-"+message.text).classList.add("marked")
+
+                if(document.querySelectorAll("#recentDraw tbody tr td").length == 5){
+                    document.querySelector("#recentDraw tbody tr td:nth-of-type(1)").remove()
+                }
+
+                var node = document.createElement("td");
+                var textnode = document.createTextNode(message.text);         // Create a text node
+                node.appendChild(textnode);                              // Append the text to <li>
+                document.querySelector("#recentDraw tbody tr").appendChild(node); 
 
             }
             
@@ -126,7 +136,6 @@ class Game extends Component {
             window.location.reload()
         });
 
-        this.getPrices();
         this.getWinningPattern();
         this.getUserDetails();
 
@@ -142,8 +151,15 @@ class Game extends Component {
                 var game_remaining = res.data.payload.binggo_max_game
                 var game_played = total_game - game_remaining
 
+                const prizeObj = []
+
+                for(let x = 0; res.data.payload.prizes.length > x; x++){
+                    prizeObj.push(res.data.payload.prizes[x].prize_desc)
+                }
+
                 this.setState({ eventWinners: res.data.payload.winners })
                 this.setState({ gamePhase:game_played })
+                this.setState({ prizes: prizeObj});
 
                 if(parseInt(game_remaining) === 0){
                     document.getElementById("triggerEndGame").click()
@@ -223,18 +239,6 @@ class Game extends Component {
 
     }
 
-    getPrices = () => {
-
-        let pl = JSON.parse(localStorage.prizes)
-
-        for(let i = 0; pl.length > i; i++){
-
-            this.setState({prizes: pl[i]})
-
-        }
-
-    }
-
     getDrawLogs = () => {
 
         let fetchDrawLogs = {
@@ -292,6 +296,8 @@ class Game extends Component {
             binggo_event_id: localStorage.room_id
         }).then(res => {
             if(res.data.status === "SUCCESS"){
+
+                this.setState({ prizeToWin: res.data.payload[0].prize_desc })
 
                 if(res.data.payload[0].B1 === "1") { document.querySelector(".B1").setAttribute("data-pattern", false); document.querySelector(".B1").classList.add("marked") }
                 if(res.data.payload[0].B2 === "1") { document.querySelector(".B2").setAttribute("data-pattern", false); document.querySelector(".B2").classList.add("marked") }
@@ -704,241 +710,287 @@ class Game extends Component {
                         </div>
                     </div>
                 </div>
-            <Header />
-            <div className="container-fluid my-4 mb-4">
-                <div className="row">
-                    <div className="col-xl-4">
 
-                        <div className="row">
-                            <div className="col-xl-12">
-                                <div className="card pb-0">
-                                    <div className="card-body">
-                                        <p className="mb-3 panel-title float-right">CURRENT DRAW</p>
-                                        <p id="current_draw"><strong>{this.state.CurrentDraw ? this.state.CurrentDraw : 0}</strong></p>
-                                        <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showPrices">Show Prices</button> | <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showWinners">Show Winners</button> 
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-xl-12 mt-3">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <p className="mb-3 panel-title float-right">PARTICIPANTS ({this.state.lop.length})</p>
-                                        <span className="clearfix"></span>
-                                        
-                                        {this.state.lop.length > 0 ? (
-                                            <>
-                                                {
-                                                this.state.lop.map((data, index) => (
-                                                    <div key={index} className="card border-0 rounded-0 shadow-sm mb-1 p-2 pl-3">
-                                                        <HighlightName key={index} username={data.username} />
-                                                    </div>
-                                                    
-                                                ))}
-                                            </>
-                                        ):(
-                                            <p>-- No Winners Yet --</p>
+                <div className="modal fade" id="showPrizes" tabIndex="-1" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-body text-center">
+                            <h4 className="mb-0">List of Prizes Left</h4>
+                                {this.state.prizes.length > 0 ? (
+                                    <ul className="list-group list-group-flush" style={{ maxHeight: 50+'vh', overflowX: 'auto' }}>
+                                        {this.state.prizes.map((list, index) => 
+                                            <li className="list-group-item" key={index}>
+                                                <p className="mb-0"><b>{index+1}:</b> {list}</p>
+                                            </li>
                                         )}
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div id="bingo-card-section" className="col-xl-4">
-
-                        <div className="card mx-auto">
-                            <div className="card-body text-center">
-                                <h3 className="text-center m-0 p-0" style={{ fontWeight: 900 }}>Macbook Pro</h3>
-                                <p className="small text-center m-0 p-0 mb-3">prize to win</p>
-                                <h3 className="d-none">{localStorage.name}</h3>
-
-                                <table id="bingo-card" className="table table-borderless mx-auto" data-set="false">
-                                    <thead>
-                                        <tr>
-                                            <th>B</th>
-                                            <th>I</th>
-                                            <th>N</th>
-                                            <th>G</th>
-                                            <th>O</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="bingo-card-player" className="bg-white">
-                                        <tr>
-                                            <td id="B1" className="js-card-cell B1" data-min="1" data-max="15"></td>
-                                            <td id="I1" className="js-card-cell I1" data-min="16" data-max="30"></td>
-                                            <td id="N1" className="js-card-cell N1" data-min="31" data-max="45"></td>
-                                            <td id="G1" className="js-card-cell G1" data-min="46" data-max="60"></td>
-                                            <td id="O1" className="js-card-cell O1" data-min="61" data-max="75"></td>
-                                        </tr>
-                                        <tr>
-                                            <td id="B2" className="js-card-cell B2" data-min="1" data-max="15"></td>
-                                            <td id="I2" className="js-card-cell I2" data-min="16" data-max="30"></td>
-                                            <td id="N2" className="js-card-cell N2" data-min="31" data-max="45"></td>
-                                            <td id="G2" className="js-card-cell G2" data-min="46" data-max="60"></td>
-                                            <td id="O2" className="js-card-cell O2" data-min="61" data-max="75"></td>
-                                        </tr>
-                                        <tr>
-                                            <td id="B3" className="js-card-cell B3" data-min="1" data-max="15"></td>
-                                            <td id="I3" className="js-card-cell I3" data-min="16" data-max="30"></td>
-                                            <td id="N3" className="js-card-cell N3 marked bg-success" data-pattern="true">FREE</td>
-                                            <td id="G3" className="js-card-cell G3" data-min="46" data-max="60"></td>
-                                            <td id="O3" className="js-card-cell O3" data-min="61" data-max="75"></td>
-                                        </tr>
-                                        <tr>
-                                            <td id="B4" className="js-card-cell B4" data-min="1" data-max="15"></td>
-                                            <td id="I4" className="js-card-cell I4" data-min="16" data-max="30"></td>
-                                            <td id="N4" className="js-card-cell N4" data-min="31" data-max="45"></td>
-                                            <td id="G4" className="js-card-cell G4" data-min="46" data-max="60"></td>
-                                            <td id="O4" className="js-card-cell O4" data-min="61" data-max="75"></td>
-                                        </tr>
-                                        <tr>
-                                            <td id="B5" className="js-card-cell B5" data-min="1" data-max="15"></td>
-                                            <td id="I5" className="js-card-cell I5" data-min="16" data-max="30"></td>
-                                            <td id="N5" className="js-card-cell N5" data-min="31" data-max="45"></td>
-                                            <td id="G5" className="js-card-cell G5" data-min="46" data-max="60"></td>
-                                            <td id="O5" className="js-card-cell O5" data-min="61" data-max="75"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <div className="btn-group w-100" role="group" aria-label="Basic example">
-                                    <button id="shuffle" className="btn btn-dark btn-sm" onClick={this.shuffleCard}>SHUFFLE CARD</button>
-                                    <button id="select_card" className="btn btn-dark btn-sm" onClick={this.selectCard}>SELECT CARD</button>
-                                    <button id="bingo" className="btn btn-dark btn-block btn-sm d-none" onClick={this.Bingo}>BINGO</button>
-                                </div>
-
+                                    </ul>
+                                        
+                                    ):(
+                                        <span></span>
+                                    )
+                                }
                             </div>
 
                         </div>
-                    </div>
-                    <div id="bingo-table-section" className="col-xl-4 bg-white">
-                        
-                        <div className="card mx-auto">
-                            <div className="card-body text-center" style={{ maxHeight: 85 + 'vh', overflowX: 'auto'}}>
-                                <table id="bingo-caller" className="table table-sm table-bordered text-center">
-                                    <tbody>
-                                        <tr>
-                                            <th>B</th>
-                                            <th>I</th>
-                                            <th>N</th>
-                                            <th>G</th>
-                                            <th>O</th>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-1" className="js-caller-cell">1</td>
-                                        <td id="js-caller-I-16" className="js-caller-cell">16</td>
-                                        <td id="js-caller-N-31" className="js-caller-cell">31</td>
-                                        <td id="js-caller-G-46" className="js-caller-cell">46</td>
-                                        <td id="js-caller-O-61" className="js-caller-cell">61</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-2" className="js-caller-cell">2</td>
-                                        <td id="js-caller-I-17" className="js-caller-cell">17</td>
-                                        <td id="js-caller-N-32" className="js-caller-cell">32</td>
-                                        <td id="js-caller-G-47" className="js-caller-cell">47</td>
-                                        <td id="js-caller-O-62" className="js-caller-cell">62</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-3" className="js-caller-cell">3</td>
-                                        <td id="js-caller-I-18" className="js-caller-cell">18</td>
-                                        <td id="js-caller-N-33" className="js-caller-cell">33</td>
-                                        <td id="js-caller-G-48" className="js-caller-cell">48</td>
-                                        <td id="js-caller-O-63" className="js-caller-cell">63</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-4" className="js-caller-cell">4</td>
-                                        <td id="js-caller-I-19" className="js-caller-cell">19</td>
-                                        <td id="js-caller-N-34" className="js-caller-cell">34</td>
-                                        <td id="js-caller-G-49" className="js-caller-cell">49</td>
-                                        <td id="js-caller-O-64" className="js-caller-cell">64</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-5" className="js-caller-cell">5</td>
-                                        <td id="js-caller-I-20" className="js-caller-cell">20</td>
-                                        <td id="js-caller-N-35" className="js-caller-cell">35</td>
-                                        <td id="js-caller-G-50" className="js-caller-cell">50</td>
-                                        <td id="js-caller-O-65" className="js-caller-cell">65</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-6" className="js-caller-cell">6</td>
-                                        <td id="js-caller-I-21" className="js-caller-cell">21</td>
-                                        <td id="js-caller-N-36" className="js-caller-cell">36</td>
-                                        <td id="js-caller-G-51" className="js-caller-cell">51</td>
-                                        <td id="js-caller-O-66" className="js-caller-cell">66</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-7" className="js-caller-cell">7</td>
-                                        <td id="js-caller-I-22" className="js-caller-cell">22</td>
-                                        <td id="js-caller-N-37" className="js-caller-cell">37</td>
-                                        <td id="js-caller-G-52" className="js-caller-cell">52</td>
-                                        <td id="js-caller-O-67" className="js-caller-cell">67</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-8" className="js-caller-cell">8</td>
-                                        <td id="js-caller-I-23" className="js-caller-cell">23</td>
-                                        <td id="js-caller-N-38" className="js-caller-cell">38</td>
-                                        <td id="js-caller-G-53" className="js-caller-cell">53</td>
-                                        <td id="js-caller-O-68" className="js-caller-cell">68</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-9" className="js-caller-cell">9</td>
-                                        <td id="js-caller-I-24" className="js-caller-cell">24</td>
-                                        <td id="js-caller-N-39" className="js-caller-cell">39</td>
-                                        <td id="js-caller-G-54" className="js-caller-cell">54</td>
-                                        <td id="js-caller-O-69" className="js-caller-cell">69</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-10" className="js-caller-cell">10</td>
-                                        <td id="js-caller-I-25" className="js-caller-cell">25</td>
-                                        <td id="js-caller-N-40" className="js-caller-cell">40</td>
-                                        <td id="js-caller-G-55" className="js-caller-cell">55</td>
-                                        <td id="js-caller-O-70" className="js-caller-cell">70</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-11" className="js-caller-cell">11</td>
-                                        <td id="js-caller-I-26" className="js-caller-cell">26</td>
-                                        <td id="js-caller-N-41" className="js-caller-cell">41</td>
-                                        <td id="js-caller-G-56" className="js-caller-cell">56</td>
-                                        <td id="js-caller-O-71" className="js-caller-cell">71</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-12" className="js-caller-cell">12</td>
-                                        <td id="js-caller-I-27" className="js-caller-cell">27</td>
-                                        <td id="js-caller-N-42" className="js-caller-cell">42</td>
-                                        <td id="js-caller-G-57" className="js-caller-cell">57</td>
-                                        <td id="js-caller-O-72" className="js-caller-cell">72</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-13" className="js-caller-cell">13</td>
-                                        <td id="js-caller-I-28" className="js-caller-cell">28</td>
-                                        <td id="js-caller-N-43" className="js-caller-cell">43</td>
-                                        <td id="js-caller-G-58" className="js-caller-cell">58</td>
-                                        <td id="js-caller-O-73" className="js-caller-cell">73</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-14" className="js-caller-cell">14</td>
-                                        <td id="js-caller-I-29" className="js-caller-cell">29</td>
-                                        <td id="js-caller-N-44" className="js-caller-cell">44</td>
-                                        <td id="js-caller-G-59" className="js-caller-cell">59</td>
-                                        <td id="js-caller-O-74" className="js-caller-cell">74</td>
-                                        </tr>
-                                        <tr>
-                                        <td id="js-caller-B-15" className="js-caller-cell">15</td>
-                                        <td id="js-caller-I-30" className="js-caller-cell">30</td>
-                                        <td id="js-caller-N-45" className="js-caller-cell">45</td>
-                                        <td id="js-caller-G-60" className="js-caller-cell">60</td>
-                                        <td id="js-caller-O-75" className="js-caller-cell">75</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-            </div>
-            <button type="button" id="triggerEndGame" className="d-none" data-toggle="modal" data-target="#endGame"></button>
+            
+                <Header />
+                <div className="container-fluid my-4 mb-4">
+                    <div className="row">
+                        <div className="col-xl-4">
+
+                            <div className="row">
+                                <div className="col-xl-12">
+                                    <div className="card pb-0">
+                                        <div className="card-body">
+                                            <p className="mb-3 panel-title float-right">CURRENT DRAW</p>
+                                            <p id="current_draw"><strong>{this.state.CurrentDraw ? this.state.CurrentDraw : 0}</strong></p>
+                                            <table id="recentDraw" className="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Last</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th>Current</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showPrizes">Show Prices</button> | <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showWinners">Show Winners</button> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-xl-12 mt-3">
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <p className="mb-3 panel-title float-right">PARTICIPANTS ({this.state.lop.length})</p>
+                                            <span className="clearfix"></span>
+                                            
+                                            {this.state.lop.length > 0 ? (
+                                                <>
+                                                    {
+                                                    this.state.lop.map((data, index) => (
+                                                        <div key={index} className="card border-0 rounded-0 shadow-sm mb-1 p-2 pl-3">
+                                                            <HighlightName key={index} username={data.username} />
+                                                        </div>
+                                                        
+                                                    ))}
+                                                </>
+                                            ):(
+                                                <p>-- No Winners Yet --</p>
+                                            )}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="bingo-card-section" className="col-xl-4">
+
+                            <div className="card mx-auto">
+                                <div className="card-body text-center">
+                                    <h3 className="text-center m-0 p-0" style={{ fontWeight: 900 }}>{this.state.prizeToWin}</h3>
+                                    <p className="small text-center m-0 p-0 mb-3">prize to win</p>
+                                    <h3 className="d-none">{localStorage.name}</h3>
+
+                                    <table id="bingo-card" className="table table-borderless mx-auto" data-set="false">
+                                        <thead>
+                                            <tr>
+                                                <th>B</th>
+                                                <th>I</th>
+                                                <th>N</th>
+                                                <th>G</th>
+                                                <th>O</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bingo-card-player" className="bg-white">
+                                            <tr>
+                                                <td id="B1" className="js-card-cell B1" data-min="1" data-max="15"></td>
+                                                <td id="I1" className="js-card-cell I1" data-min="16" data-max="30"></td>
+                                                <td id="N1" className="js-card-cell N1" data-min="31" data-max="45"></td>
+                                                <td id="G1" className="js-card-cell G1" data-min="46" data-max="60"></td>
+                                                <td id="O1" className="js-card-cell O1" data-min="61" data-max="75"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="B2" className="js-card-cell B2" data-min="1" data-max="15"></td>
+                                                <td id="I2" className="js-card-cell I2" data-min="16" data-max="30"></td>
+                                                <td id="N2" className="js-card-cell N2" data-min="31" data-max="45"></td>
+                                                <td id="G2" className="js-card-cell G2" data-min="46" data-max="60"></td>
+                                                <td id="O2" className="js-card-cell O2" data-min="61" data-max="75"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="B3" className="js-card-cell B3" data-min="1" data-max="15"></td>
+                                                <td id="I3" className="js-card-cell I3" data-min="16" data-max="30"></td>
+                                                <td id="N3" className="js-card-cell N3 marked bg-success" data-pattern="true">FREE</td>
+                                                <td id="G3" className="js-card-cell G3" data-min="46" data-max="60"></td>
+                                                <td id="O3" className="js-card-cell O3" data-min="61" data-max="75"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="B4" className="js-card-cell B4" data-min="1" data-max="15"></td>
+                                                <td id="I4" className="js-card-cell I4" data-min="16" data-max="30"></td>
+                                                <td id="N4" className="js-card-cell N4" data-min="31" data-max="45"></td>
+                                                <td id="G4" className="js-card-cell G4" data-min="46" data-max="60"></td>
+                                                <td id="O4" className="js-card-cell O4" data-min="61" data-max="75"></td>
+                                            </tr>
+                                            <tr>
+                                                <td id="B5" className="js-card-cell B5" data-min="1" data-max="15"></td>
+                                                <td id="I5" className="js-card-cell I5" data-min="16" data-max="30"></td>
+                                                <td id="N5" className="js-card-cell N5" data-min="31" data-max="45"></td>
+                                                <td id="G5" className="js-card-cell G5" data-min="46" data-max="60"></td>
+                                                <td id="O5" className="js-card-cell O5" data-min="61" data-max="75"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div className="btn-group w-100" role="group" aria-label="Basic example">
+                                        <button id="shuffle" className="btn btn-dark btn-sm" onClick={this.shuffleCard}>SHUFFLE CARD</button>
+                                        <button id="select_card" className="btn btn-dark btn-sm" onClick={this.selectCard}>SELECT CARD</button>
+                                        <button id="bingo" className="btn btn-dark btn-block btn-sm d-none" onClick={this.Bingo}>BINGO</button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="bingo-table-section" className="col-xl-4 bg-white">
+                            
+                            <div className="card mx-auto">
+                                <div className="card-body text-center" style={{ maxHeight: 85 + 'vh', overflowX: 'auto'}}>
+                                    <table id="bingo-caller" className="table table-sm table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <th>B</th>
+                                                <th>I</th>
+                                                <th>N</th>
+                                                <th>G</th>
+                                                <th>O</th>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-1" className="js-caller-cell">1</td>
+                                            <td id="js-caller-I-16" className="js-caller-cell">16</td>
+                                            <td id="js-caller-N-31" className="js-caller-cell">31</td>
+                                            <td id="js-caller-G-46" className="js-caller-cell">46</td>
+                                            <td id="js-caller-O-61" className="js-caller-cell">61</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-2" className="js-caller-cell">2</td>
+                                            <td id="js-caller-I-17" className="js-caller-cell">17</td>
+                                            <td id="js-caller-N-32" className="js-caller-cell">32</td>
+                                            <td id="js-caller-G-47" className="js-caller-cell">47</td>
+                                            <td id="js-caller-O-62" className="js-caller-cell">62</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-3" className="js-caller-cell">3</td>
+                                            <td id="js-caller-I-18" className="js-caller-cell">18</td>
+                                            <td id="js-caller-N-33" className="js-caller-cell">33</td>
+                                            <td id="js-caller-G-48" className="js-caller-cell">48</td>
+                                            <td id="js-caller-O-63" className="js-caller-cell">63</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-4" className="js-caller-cell">4</td>
+                                            <td id="js-caller-I-19" className="js-caller-cell">19</td>
+                                            <td id="js-caller-N-34" className="js-caller-cell">34</td>
+                                            <td id="js-caller-G-49" className="js-caller-cell">49</td>
+                                            <td id="js-caller-O-64" className="js-caller-cell">64</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-5" className="js-caller-cell">5</td>
+                                            <td id="js-caller-I-20" className="js-caller-cell">20</td>
+                                            <td id="js-caller-N-35" className="js-caller-cell">35</td>
+                                            <td id="js-caller-G-50" className="js-caller-cell">50</td>
+                                            <td id="js-caller-O-65" className="js-caller-cell">65</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-6" className="js-caller-cell">6</td>
+                                            <td id="js-caller-I-21" className="js-caller-cell">21</td>
+                                            <td id="js-caller-N-36" className="js-caller-cell">36</td>
+                                            <td id="js-caller-G-51" className="js-caller-cell">51</td>
+                                            <td id="js-caller-O-66" className="js-caller-cell">66</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-7" className="js-caller-cell">7</td>
+                                            <td id="js-caller-I-22" className="js-caller-cell">22</td>
+                                            <td id="js-caller-N-37" className="js-caller-cell">37</td>
+                                            <td id="js-caller-G-52" className="js-caller-cell">52</td>
+                                            <td id="js-caller-O-67" className="js-caller-cell">67</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-8" className="js-caller-cell">8</td>
+                                            <td id="js-caller-I-23" className="js-caller-cell">23</td>
+                                            <td id="js-caller-N-38" className="js-caller-cell">38</td>
+                                            <td id="js-caller-G-53" className="js-caller-cell">53</td>
+                                            <td id="js-caller-O-68" className="js-caller-cell">68</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-9" className="js-caller-cell">9</td>
+                                            <td id="js-caller-I-24" className="js-caller-cell">24</td>
+                                            <td id="js-caller-N-39" className="js-caller-cell">39</td>
+                                            <td id="js-caller-G-54" className="js-caller-cell">54</td>
+                                            <td id="js-caller-O-69" className="js-caller-cell">69</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-10" className="js-caller-cell">10</td>
+                                            <td id="js-caller-I-25" className="js-caller-cell">25</td>
+                                            <td id="js-caller-N-40" className="js-caller-cell">40</td>
+                                            <td id="js-caller-G-55" className="js-caller-cell">55</td>
+                                            <td id="js-caller-O-70" className="js-caller-cell">70</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-11" className="js-caller-cell">11</td>
+                                            <td id="js-caller-I-26" className="js-caller-cell">26</td>
+                                            <td id="js-caller-N-41" className="js-caller-cell">41</td>
+                                            <td id="js-caller-G-56" className="js-caller-cell">56</td>
+                                            <td id="js-caller-O-71" className="js-caller-cell">71</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-12" className="js-caller-cell">12</td>
+                                            <td id="js-caller-I-27" className="js-caller-cell">27</td>
+                                            <td id="js-caller-N-42" className="js-caller-cell">42</td>
+                                            <td id="js-caller-G-57" className="js-caller-cell">57</td>
+                                            <td id="js-caller-O-72" className="js-caller-cell">72</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-13" className="js-caller-cell">13</td>
+                                            <td id="js-caller-I-28" className="js-caller-cell">28</td>
+                                            <td id="js-caller-N-43" className="js-caller-cell">43</td>
+                                            <td id="js-caller-G-58" className="js-caller-cell">58</td>
+                                            <td id="js-caller-O-73" className="js-caller-cell">73</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-14" className="js-caller-cell">14</td>
+                                            <td id="js-caller-I-29" className="js-caller-cell">29</td>
+                                            <td id="js-caller-N-44" className="js-caller-cell">44</td>
+                                            <td id="js-caller-G-59" className="js-caller-cell">59</td>
+                                            <td id="js-caller-O-74" className="js-caller-cell">74</td>
+                                            </tr>
+                                            <tr>
+                                            <td id="js-caller-B-15" className="js-caller-cell">15</td>
+                                            <td id="js-caller-I-30" className="js-caller-cell">30</td>
+                                            <td id="js-caller-N-45" className="js-caller-cell">45</td>
+                                            <td id="js-caller-G-60" className="js-caller-cell">60</td>
+                                            <td id="js-caller-O-75" className="js-caller-cell">75</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="triggerEndGame" className="d-none" data-toggle="modal" data-target="#endGame"></button>
         </>
         );
     }
