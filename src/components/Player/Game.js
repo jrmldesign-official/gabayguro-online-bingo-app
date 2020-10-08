@@ -767,7 +767,16 @@ class Game extends Component {
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showPrizes">Show Prices</button> | <button type="button" className="btn btn-sm btn-link small p-0 m-0" data-toggle="modal" data-target="#showWinners">Show Winners</button> 
+                                            <button type="button" className="btn btn-sm btn-link small p-0 m-0 mr-1" data-toggle="modal" data-target="#showPrizes">Show Prices</button> 
+                                            | 
+                                            {this.state.eventWinners.length > 0 ? (
+                                                <button type="button" className="btn btn-sm btn-link small p-0 m-0 ml-1" data-toggle="modal" data-target="#showWinners">Show Winners</button> 
+                                            ):(
+                                                <button type="button" className="btn btn-sm btn-link text-muted small p-0 m-0 ml-1" disabled>No Winners Yet</button> 
+                                            )
+                                            }
+                                            
+                                            
                                         </div>
                                     </div>
                                 </div>

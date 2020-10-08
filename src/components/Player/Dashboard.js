@@ -25,30 +25,37 @@ class Dashboard extends Component {
 
   async componentDidMount() {
 
-    let result = await api.post(`Binggo/fetch_all_binggo_events`)
-    
-    if(result.data.status === "SUCCESS"){
-
-      let bingoEvts = []
-
-      for(let i = 0; result.data.payload.length > i; i++){
-        if(result.data.payload[i].binggo_max_game === "0"){
-
-        }else{
-          bingoEvts.push({
-            binggo_event_id: result.data.payload[i].binggo_event_id,
-            binggo_title: result.data.payload[i].binggo_title
-          })
-        }
-      
-      }
-
-      this.setState({listevents: bingoEvts})
-
+    if(localStorage.user_id === undefined || localStorage.user_id === "undefined"){
+      localStorage.clear();
+      window.location.href = "/bingo";
     }else{
-      document.getElementById("btnJoin").classList.add("d-none")
-      document.getElementById("eventsHelper").classList.remove("d-none")
+      let result = await api.post(`Binggo/fetch_all_binggo_events`)
+
+      if(result.data.status === "SUCCESS"){
+
+        let bingoEvts = []
+
+        for(let i = 0; result.data.payload.length > i; i++){
+          if(result.data.payload[i].binggo_max_game === "0"){
+
+          }else{
+            bingoEvts.push({
+              binggo_event_id: result.data.payload[i].binggo_event_id,
+              binggo_title: result.data.payload[i].binggo_title
+            })
+          }
+        
+        }
+
+        this.setState({listevents: bingoEvts})
+
+      }else{
+        document.getElementById("btnJoin").classList.add("d-none")
+        document.getElementById("eventsHelper").classList.remove("d-none")
+      }
+      
     }
+
     
   }
 

@@ -89,23 +89,13 @@ export default class Login extends React.Component {
     }else{
       axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}&contact_no=${user.contact}`)
         .then(res => {
-          if(res.data.status === "SUCCESS"){
-            if(res.data.payload[0].user_type === 'admin'){
-            }else{
-              localStorage.setItem("user_id", res.data.payload[0].user_id)
-              window.location.href = "/bingo"
-            }
-          }else if(res.data.status === "Success"){
-            if(res.data.payload[0].user_type === 'admin'){
-            }else{
-              localStorage.setItem("user_id", res.data.payload[0].user_id)
-              window.location.href = "/bingo"
-            }
+          console.log(res)
+          if(res.data.status === "Success"){
+            localStorage.setItem("user_id", res.data.payload[0].user_id)
+            window.location.href = "/bingo"
           }else{
 
           }
-          console.log(res);
-          console.log(res.data);
         })
     }
 
