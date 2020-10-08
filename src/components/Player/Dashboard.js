@@ -50,8 +50,8 @@ class Dashboard extends Component {
         this.setState({listevents: bingoEvts})
 
       }else{
-        document.getElementById("btnJoin").classList.add("d-none")
-        document.getElementById("eventsHelper").classList.remove("d-none")
+        // document.getElementById("btnJoin").classList.add("d-none")
+        // document.getElementById("eventsHelper").classList.remove("d-none")
       }
       
     }
