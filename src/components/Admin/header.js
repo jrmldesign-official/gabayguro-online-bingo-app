@@ -28,10 +28,7 @@ class header extends Component {
         }).then(res => {
 
             localStorage.setItem("name", res.data.payload[0].user_fullname)
-
-            this.setState({
-                name: res.data.payload[0].user_fullname,
-            })
+            this.setState({ name: res.data.payload[0].user_fullname })
 
         }).catch(err => {
             console.log(err)

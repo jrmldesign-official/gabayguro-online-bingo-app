@@ -10,7 +10,7 @@ class Dashboard extends Component {
 
   state = {
     keyvalue: '',
-    room_id: '',
+    room_id: 0,
     prizes: '',
     listevents: []
   }
@@ -24,9 +24,27 @@ class Dashboard extends Component {
   
 
   async componentDidMount() {
+
     let result = await api.post(`Binggo/fetch_all_binggo_events`)
+    
     if(result.data.status === "SUCCESS"){
-      this.setState({listevents: result.data.payload})
+
+      let bingoEvts = []
+
+      for(let i = 0; result.data.payload.length > i; i++){
+        if(result.data.payload[i].binggo_max_game === "0"){
+
+        }else{
+          bingoEvts.push({
+            binggo_event_id: result.data.payload[i].binggo_event_id,
+            binggo_title: result.data.payload[i].binggo_title
+          })
+        }
+      
+      }
+
+      this.setState({listevents: bingoEvts})
+
     }else{
       document.getElementById("btnJoin").classList.add("d-none")
       document.getElementById("eventsHelper").classList.remove("d-none")
@@ -43,10 +61,14 @@ class Dashboard extends Component {
 
   handleSubmit(event) {
     
-    localStorage.setItem("room_id", this.state.room_id)
-    localStorage.setItem("prizes", this.state.prizes)
-    window.location.href = "/game"
-    event.preventDefault();
+    if(this.state.room_id === 0){
+      event.preventDefault()
+    }else{
+      localStorage.setItem("room_id", this.state.room_id)
+      localStorage.setItem("prizes", this.state.prizes)
+      window.location.href = "/game"
+      event.preventDefault();
+    }
     
   }
 
@@ -75,20 +97,21 @@ class Dashboard extends Component {
 
                         {
                           this.state.listevents.length > 0 ? (
+                            <>
                               <select className="custom-select rounded-0 mb-3" value={this.state.room_id} data-id={this.state.keyvalue} onChange={this.getRoomId}>
                                   <option>Select Bingo Event</option>
-                                  {this.state.listevents.map((list, index) => 
+                                  {this.state.listevents
+                                      .map((list, index) => 
                                       <option key={list.binggo_event_id} data-id={index} value={list.binggo_event_id} >{list.binggo_title}</option>
                                   )}
                               </select>
-                              
+
+                              <button type="submit" id="btnJoin" className="btn btn-primary btn-block">Join</button>
+                            </>
                           ):(
-                              <span></span>
+                            <h3 id="eventsHelper" className="text-center">no events found</h3>
                           )
                         }
-
-                        <h3 id="eventsHelper" className="text-center d-none">No Events Posted Yet</h3>
-                        <button type="submit" id="btnJoin" className="btn btn-primary btn-block">Join</button>
 
                       </form>
 

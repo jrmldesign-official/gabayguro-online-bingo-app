@@ -16,7 +16,7 @@ ReactDOM.render((
   <BrowserRouter>
       <Switch>
           <ProtectedRoute exact={true} path="/" component={Player_Dashboard} />
-          <Route exact path="/login" component={Login} />
+          <Route path="/login/:pathParam1?/:pathParam2?/:pathParam3?/" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/admin" component={Admin} />
           <ProtectedRoute exact={true} path="/game" component={Game} />

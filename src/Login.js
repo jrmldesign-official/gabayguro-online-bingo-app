@@ -22,7 +22,30 @@ export default class Login extends React.Component {
   }
 
   componentDidMount() {
-    if(localStorage.user_id === undefined || localStorage.user_id === "undefined"){
+
+    if(this.props.match.params.pathParam1 === undefined){
+      this.setState({ name: '' })
+    }else{
+      this.setState({ name:this.props.match.params.pathParam1 })
+    }
+    
+    if(this.props.match.params.pathParam2 === undefined){
+      this.setState({ email: '' })
+    }else{
+      this.setState({ email:this.props.match.params.pathParam2 })
+    }
+
+    if(this.props.match.params.pathParam3 === undefined){
+      this.setState({ contact: '' })
+    }else{
+      this.setState({ contact:this.props.match.params.pathParam3 })
+    }
+
+    if(this.props.match.params.pathParam1 !== undefined && this.props.match.params.pathParam2 !== undefined && this.props.match.params.pathParam3 !== undefined){
+      setTimeout(function(){
+        document.querySelector("#btnLogin").click()
+      },500)
+    }else if(localStorage.user_id === undefined || localStorage.user_id === "undefined"){
       localStorage.clear();
     }else{
       window.location.href = "/bingo";
@@ -115,7 +138,7 @@ export default class Login extends React.Component {
                   <a href="/register" className="small text-right mb-3 d-none">Register here</a>
 
                   <a href="/login" className="mb-5 mr-auto">
-                  <img src="https://www.gabayguro.com/wp-content/uploads/2018/09/cropped-gabayguro-favicon-1-32x32.png" style={{ width: 1.5+'rem' }} />
+                  <img src="https://www.gabayguro.com/wp-content/uploads/2018/09/cropped-gabayguro-favicon-1-32x32.png" alt="logo" style={{ width: 1.5+'rem' }} />
                   </a>
 
                   <form className="row" onSubmit={this.handleSubmit}>
@@ -142,7 +165,7 @@ export default class Login extends React.Component {
                       </div>
                     </div>
                     <div className="col-12 mt-2">
-                      <button type="submit" className="btn gg-bg text-white btn-block">Log in</button>
+                      <button type="submit" id="btnLogin" className="btn gg-bg text-white btn-block">Log in</button>
                     </div>
                   </form>
               </div>

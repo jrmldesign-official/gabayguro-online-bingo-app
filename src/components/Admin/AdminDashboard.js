@@ -58,11 +58,25 @@ class Dashboard extends Component {
 
   getEventList = () => {
 
-    API.get(`Binggo/fetch_all_binggo_events`).
-    then(res => {
+    API.get(`Binggo/fetch_all_binggo_events`).then(res => {
       if(res.data.status === "SUCCESS"){
 
-        this.setState({listevents: res.data.payload})
+        let bingoEvts = []
+
+        for(let i = 0; res.data.payload.length > i; i++){
+          if(res.data.payload[i].binggo_max_game === "0"){
+
+          }else{
+            bingoEvts.push({
+              binggo_event_id: res.data.payload[i].binggo_event_id,
+              binggo_title: res.data.payload[i].binggo_title
+            })
+          }
+        
+        }
+
+
+        this.setState({listevents: bingoEvts})
   
       }else{
   
@@ -189,19 +203,20 @@ class Dashboard extends Component {
 
                   {
                     this.state.listevents.length > 0 ? (
+                      <>
                         <select className="custom-select rounded-0 mb-3" value={this.state.room_id} data-id={this.state.keyvalue} onChange={this.getRoomId}>
                             <option>Select Bingo Event</option>
                             {this.state.listevents.map((list, index) => 
                                 <option key={list.binggo_event_id} data-id={index} value={list.binggo_event_id} >{list.binggo_title}</option>
                             )}
                         </select>
-                        
+
+                        <button type="submit" className="btn btn-primary btn-block">Host this event</button>
+                      </>
                     ):(
-                        <span></span>
+                      <h3 id="eventsHelper" className="text-center">no events found</h3>
                     )
                   }
-
-                  <button type="submit" className="btn btn-primary btn-block">Host this event</button>
 
                 </form>
 

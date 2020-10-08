@@ -29,11 +29,9 @@ class header extends Component {
             if(res.data.status === "SUCCESS"){
 
                 localStorage.setItem("name", res.data.payload[0].user_fullname)
-
                 this.setState({ name: res.data.payload[0].user_fullname })
+                
             }
-            console.log(res);
-            console.log(res.data);
 
         }).catch(err => {
             console.log(err)

@@ -47,7 +47,6 @@ class Game extends Component {
         });
 
         socket.on('broadcaseWinner', message => {
-            console.log(message)
             if(message.text.status === 'true' || message.status === true){
                 API.post(`Binggo/end_game`, {
                     binggo_event_id: room
@@ -56,7 +55,7 @@ class Game extends Component {
                     if(this.state.gamePhase === 0 || this.state.gamePhase === '0'){
                         var gameCount = 1
                     }else{
-                        var gameCount = this.state.gamePhase
+                        gameCount = this.state.gamePhase
                     }
 
                     API.post(`Binggo/save_winner`, {
@@ -97,7 +96,7 @@ class Game extends Component {
                 if(parseInt(game_remaining) === 0){
                     document.getElementById("triggerEndGame").click()
                 }
-                console.log("PHASE: "+ this.state.gamePhase)
+
             }
         }).catch(err => {
             console.log(err)
@@ -122,8 +121,6 @@ class Game extends Component {
 
                         this.setState({ gamePhase:game_played })
 
-                        console.log("PHASE: "+ this.state.gamePhase)
-
                         if(res.data.payload.binggo_status === "1"){
                             document.querySelector(".stepTwo").classList.remove("disabled")
                             document.querySelector(".stepTwo p").classList.add("font-weight-bolder") 
@@ -136,8 +133,6 @@ class Game extends Component {
                             
                         }
 
-                        console.log("--trigger--")
-
                         API.post(`Binggo/fetch_draw_logs`, {
                             binggo_event_id: room,
                             binggo_event_count: this.state.gamePhase
@@ -145,7 +140,6 @@ class Game extends Component {
                 
                             if(res.data.status === "SUCCESS"){
                                 
-                                console.log("NAUNA")
                                 for(var i = 0; res.data.payload.length > i; i ++ ){
                                     CollectDraw.push(res.data.payload[i].binggo_draw)
                                     document.getElementById(`js-caller-${res.data.payload[i].binggo_draw}`).classList.add("marked")
@@ -159,8 +153,6 @@ class Game extends Component {
                                 this.setState({ totalDraw: res.data.payload.length })
                                 this.setState({ drawLogs : CollectDraw })
                                 socket.emit('drawAllBall', CollectDraw);
-
-                                console.log("--trigger--1")
                                 this.populateBallsArray();
                 
                                 if(res.data.payload.length === 75){
@@ -183,7 +175,6 @@ class Game extends Component {
                                 
                             }else{
                                 this.populateBallsArray();
-                                console.log("--trigger--1")
                             }
                         }).catch(err => {
                             console.log(err)
@@ -248,7 +239,6 @@ class Game extends Component {
     }
 
     getPrizeId(event) {
-        console.log(event.target.value)
         this.setState({prizeId: event.target.value});
     }
 
@@ -259,7 +249,6 @@ class Game extends Component {
 
     Setppattern = (event) => {
         event.target.classList.toggle("markedPattern");
-        console.log(event.target.getAttribute("data-cell"))
     }
 
     GetPattern = (e) => {
@@ -289,34 +278,34 @@ class Game extends Component {
         let G5 = document.querySelector("#pattern-G5").classList.contains("markedPattern")
         let O5 = document.querySelector("#pattern-O5").classList.contains("markedPattern")
 
-        if(B1 === true) { var B1_flag = 1 } else { var B1_flag = 0 }
-        if(I1 === true) { var I1_flag = 1 } else { var I1_flag = 0 }
-        if(N1 === true) { var N1_flag = 1 } else { var N1_flag = 0 }
-        if(G1 === true) { var G1_flag = 1 } else { var G1_flag = 0 }
-        if(O1 === true) { var O1_flag = 1 } else { var O1_flag = 0 }
+        if(B1 === true) { var B1_flag = 1 } else { B1_flag = 0 }
+        if(I1 === true) { var I1_flag = 1 } else { I1_flag = 0 }
+        if(N1 === true) { var N1_flag = 1 } else { N1_flag = 0 }
+        if(G1 === true) { var G1_flag = 1 } else { G1_flag = 0 }
+        if(O1 === true) { var O1_flag = 1 } else { O1_flag = 0 }
 
-        if(B2 === true) { var B2_flag = 1 } else { var B2_flag = 0 }
-        if(I2 === true) { var I2_flag = 1 } else { var I2_flag = 0 }
-        if(N2 === true) { var N2_flag = 1 } else { var N2_flag = 0 }
-        if(G2 === true) { var G2_flag = 1 } else { var G2_flag = 0 }
-        if(O2 === true) { var O2_flag = 1 } else { var O2_flag = 0 }
+        if(B2 === true) { var B2_flag = 1 } else { B2_flag = 0 }
+        if(I2 === true) { var I2_flag = 1 } else { I2_flag = 0 }
+        if(N2 === true) { var N2_flag = 1 } else { N2_flag = 0 }
+        if(G2 === true) { var G2_flag = 1 } else { G2_flag = 0 }
+        if(O2 === true) { var O2_flag = 1 } else { O2_flag = 0 }
 
-        if(B3 === true) { var B3_flag = 1 } else { var B3_flag = 0 }
-        if(I3 === true) { var I3_flag = 1 } else { var I3_flag = 0 }
-        if(G3 === true) { var G3_flag = 1 } else { var G3_flag = 0 }
-        if(O3 === true) { var O3_flag = 1 } else { var O3_flag = 0 }
+        if(B3 === true) { var B3_flag = 1 } else { B3_flag = 0 }
+        if(I3 === true) { var I3_flag = 1 } else { I3_flag = 0 }
+        if(G3 === true) { var G3_flag = 1 } else { G3_flag = 0 }
+        if(O3 === true) { var O3_flag = 1 } else { O3_flag = 0 }
 
-        if(B4 === true) { var B4_flag = 1 } else { var B4_flag = 0 }
-        if(I4 === true) { var I4_flag = 1 } else { var I4_flag = 0 }
-        if(N4 === true) { var N4_flag = 1 } else { var N4_flag = 0 }
-        if(G4 === true) { var G4_flag = 1 } else { var G4_flag = 0 }
-        if(O4 === true) { var O4_flag = 1 } else { var O4_flag = 0 }
+        if(B4 === true) { var B4_flag = 1 } else { B4_flag = 0 }
+        if(I4 === true) { var I4_flag = 1 } else { I4_flag = 0 }
+        if(N4 === true) { var N4_flag = 1 } else { N4_flag = 0 }
+        if(G4 === true) { var G4_flag = 1 } else { G4_flag = 0 }
+        if(O4 === true) { var O4_flag = 1 } else { O4_flag = 0 }
 
-        if(B5 === true) { var B5_flag = 1 } else { var B5_flag = 0 }
-        if(I5 === true) { var I5_flag = 1 } else { var I5_flag = 0 }
-        if(N5 === true) { var N5_flag = 1 } else { var N5_flag = 0 }
-        if(G5 === true) { var G5_flag = 1 } else { var G5_flag = 0 }
-        if(O5 === true) { var O5_flag = 1 } else { var O5_flag = 0 }
+        if(B5 === true) { var B5_flag = 1 } else { B5_flag = 0 }
+        if(I5 === true) { var I5_flag = 1 } else { I5_flag = 0 }
+        if(N5 === true) { var N5_flag = 1 } else { N5_flag = 0 }
+        if(G5 === true) { var G5_flag = 1 } else { G5_flag = 0 }
+        if(O5 === true) { var O5_flag = 1 } else { O5_flag = 0 }
 
         API.post(`Binggo/set_binggo_wining_pattern`, {
             "binggo_event_id": room,
@@ -350,6 +339,7 @@ class Game extends Component {
         }).then(res => {
             if(res.data.status === "SUCCESS"){
 
+                this.setState({ winningPrize: document.querySelector('#winningPrize option:checked').text })
                 document.querySelector(".stepOne").classList.add("disabled")
                 document.querySelector(".stepOne p").classList.remove("font-weight-boler")
                 document.querySelector(".btnWinningPattern").classList.add("d-none")
@@ -357,6 +347,7 @@ class Game extends Component {
                 document.querySelector(".stepTwo p").classList.add("font-weight-boler")
                 document.querySelector(".btnStartBingo").classList.remove("d-none")
                 document.querySelector(".close").click()
+                
             }
 
         }).catch(err => {
@@ -542,11 +533,6 @@ class Game extends Component {
 
                                 let total = getBallCount - countAllDraw
 
-                    
-
-                                
-
-
                                 this.setState({ totalDraw: res.data.payload.length })
                                 this.setState({ drawLogs : CollectDraw })
                                 socket.emit('drawAllBall', CollectDraw);
@@ -570,7 +556,7 @@ class Game extends Component {
 
                                 CollectDraw = []
 
-                                console.log("BALL COUNT" + total)
+                                // console.log("BALL COUNT" + total)
                                 
                             }else{
 
@@ -646,10 +632,11 @@ class Game extends Component {
 
                             <div className="input-group mb-3">
                             <div className="input-group-prepend">
-                                <label className="input-group-text" for="inputGroupSelect01">Tag Winning Prize</label>
+                                <label className="input-group-text">Tag Winning Prize</label>
                             </div>
                             {this.state.winningPrizes.length > 0 ? (
-                            <select className="custom-select" value={this.state.prize_id} onChange={this.getPrizeId}>
+                            <select id="winningPrize" className="custom-select" value={this.state.prize_id} onChange={this.getPrizeId}>
+                                <option>Choose Winning Prize</option>
                                 {this.state.winningPrizes.map((list, index) => 
                                 <option key={index} value={list.prize_id}>
                                     {list.prize_desc}

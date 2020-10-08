@@ -1,6 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 
+const API = axios.create({
+  baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
+  headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+  },
+});
+
 export default class Login extends React.Component {
   constructor() {
     super();
@@ -31,26 +38,18 @@ export default class Login extends React.Component {
       return this.setState({ error: 'Password is required' });
     }
 
-    const user = {
-      name: this.state.name,
-      email: this.state.email
-    };
 
-    axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}&contact_no=`)
-      .then(res => {
-        if(res.data.status === "Success" || res.data.status === "SUCCESS"){
-          if(res.data.payload[0].user_type === 'admin'){
-            localStorage.setItem("user_id", res.data.payload[0].user_id)
-            window.location.href = "/admin-dashboard"
-          }else{
-            // alert("hindi siya admin")
-          }
+    API.post(`Useraccounts/authenticate_admin`, {
+      username_or_email: this.state.name,
+      password: this.state.email
+    }).then(res => {
+        if(res.data.status === "SUCCESS"){
+          localStorage.setItem("user_id", res.data.payload.user_id)
+          window.location.href = "/admin-dashboard"
         }
-        console.log(res);
-        console.log(res.data);
-      })
-
-
+    }).catch(err => {
+        console.log(err)
+    });
 
     return this.setState({ error: '' });
   }

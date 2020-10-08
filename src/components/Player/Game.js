@@ -7,7 +7,6 @@ var socket = io.connect('https://gabayguro-bingo-server.herokuapp.com/')
 var room = localStorage.room_id
 var user_id = localStorage.user_id
 var username = localStorage.name
-var patternObj = []
 
 const API = axios.create({
     baseURL: 'https://binggo-test.dokyumento.asia/index.php/',
@@ -45,6 +44,10 @@ class Game extends Component {
             this.setState({ lop: users })
         });
 
+        socket.on('displayWinningPrize', message => {
+            this.setState({ prizeToWin: message.text })
+        })
+        
         socket.on('displayDraw', message => {
 
             let hasSelected = document.getElementById("bingo-card").getAttribute("data-set")
@@ -53,17 +56,23 @@ class Game extends Component {
 
             }else{
 
-                this.setState({ CurrentDraw: message.text })
-                document.getElementById("js-caller-"+message.text).classList.add("marked")
+                if(document.querySelectorAll("#select_card").length === 0){
 
-                if(document.querySelectorAll("#recentDraw tbody tr td").length == 5){
-                    document.querySelector("#recentDraw tbody tr td:nth-of-type(1)").remove()
+                    this.setState({ CurrentDraw: message.text })
+                    document.getElementById("js-caller-"+message.text).classList.add("marked")
+
+                    if(document.querySelectorAll("#recentDraw tbody tr td").length === 5){
+                        document.querySelector("#recentDraw tbody tr td:nth-of-type(1)").remove()
+                    }
+
+                    var node = document.createElement("td");
+                    var textnode = document.createTextNode(message.text);
+                    node.appendChild(textnode);
+                    document.querySelector("#recentDraw tbody tr").appendChild(node);
+
+                }else{
+
                 }
-
-                var node = document.createElement("td");
-                var textnode = document.createTextNode(message.text);         // Create a text node
-                node.appendChild(textnode);                              // Append the text to <li>
-                document.querySelector("#recentDraw tbody tr").appendChild(node); 
 
             }
             
@@ -139,8 +148,7 @@ class Game extends Component {
         this.getWinningPattern();
         this.getUserDetails();
 
-
-        console.log("--trigger fetch bingo event--")
+        // console.log("--trigger fetch bingo event--")
         API.post(`Binggo/fetch_binggo_event_by_id`, {
             binggo_event_id: room
         }).then(res => {
@@ -232,6 +240,7 @@ class Game extends Component {
                 
                 console.log("PHASE: "+ this.state.gamePhase)
             }
+
         }).catch(err => {
             console.log(err)
         });
@@ -314,8 +323,8 @@ class Game extends Component {
                 if(res.data.payload[0].N1 === "1") { document.querySelector(".N1").setAttribute("data-pattern", false); document.querySelector(".N1").classList.add("marked") }
                 if(res.data.payload[0].N2 === "1") { document.querySelector(".N2").setAttribute("data-pattern", false); document.querySelector(".N2").classList.add("marked") }
                 // if(res.data.payload[0].N3 === "1") { document.querySelector(".N3").setAttribute("data-pattern", false) }
-                if(res.data.payload[0].N4 === "1") { document.querySelector(".N4").setAttribute("data-pattern", false); document.querySelector(".N3").classList.add("marked") }
-                if(res.data.payload[0].N5 === "1") { document.querySelector(".N5").setAttribute("data-pattern", false); document.querySelector(".N3").classList.add("marked") }
+                if(res.data.payload[0].N4 === "1") { document.querySelector(".N4").setAttribute("data-pattern", false); document.querySelector(".N4").classList.add("marked") }
+                if(res.data.payload[0].N5 === "1") { document.querySelector(".N5").setAttribute("data-pattern", false); document.querySelector(".N5").classList.add("marked") }
 
                 if(res.data.payload[0].G1 === "1") { document.querySelector(".G1").setAttribute("data-pattern", false); document.querySelector(".G1").classList.add("marked") }
                 if(res.data.payload[0].G2 === "1") { document.querySelector(".G2").setAttribute("data-pattern", false); document.querySelector(".G2").classList.add("marked") }
@@ -636,20 +645,11 @@ class Game extends Component {
                 document.getElementById("select_card").remove()
             }
             
-            console.log(res);
-            console.log(res.data);
         })
         
     }
     
     Bingo = () => {
-
-        // for(let i = 0; document.querySelectorAll(".js-card-cell[data-pattern='true']").length > i; i++){
-        //     patternObj.push(document.querySelectorAll(".js-card-cell[data-pattern='true']")[i])
-        //     if(document.querySelectorAll(".js-card-cell[data-pattern='true']").length === i+1){
-                
-        //     }
-        // }
         socket.emit('playerBingo', {
             playerID: user_id,
             status: 'true',
@@ -748,7 +748,7 @@ class Game extends Component {
                                             <p className="mb-3 panel-title float-right">CURRENT DRAW</p>
                                             <p id="current_draw"><strong>{this.state.CurrentDraw ? this.state.CurrentDraw : 0}</strong></p>
                                             <table id="recentDraw" className="table">
-                                                <thead>
+                                                <thead className="d-none">
                                                     <tr>
                                                         <th>Last</th>
                                                         <th></th>
