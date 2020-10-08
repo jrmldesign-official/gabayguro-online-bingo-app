@@ -90,11 +90,12 @@ export default class Login extends React.Component {
       axios.post(`https://binggo-test.dokyumento.asia/index.php/Useraccounts/authenticate/?name=${user.name}&email=${user.email}&contact_no=${user.contact}`)
         .then(res => {
           console.log(res)
-          if(res.data.status === "Success"){
-            localStorage.setItem("user_id", res.data.payload[0].user_id)
+          if(res.data.message === "Successfully created new user"){
+            localStorage.setItem("user_id", res.data.payload.user_id)
             window.location.href = "/bingo"
           }else{
-
+            localStorage.setItem("user_id", res.data.payload[0].user_id)
+            window.location.href = "/bingo"
           }
         })
     }
